@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Class {
+  id           String       @id @default(cuid())
+  name         String
+  gradeLevel   Int
+  conflicts    Conflict[]
+  assignments  Assignment[]
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+model Conflict {
+  id        String   @id @default(cuid())
+  day       Day
+  periods   Int[]
+  class     Class    @relation(fields: [classId], references: [id], onDelete: Cascade)
+  classId   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TeacherAvailability {
+  id             String   @id @default(cuid())
+  date           DateTime
+  blockedPeriods Int[]
+  reason         String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Schedule {
+  id            String       @id @default(cuid())
+  startDate     DateTime
+  endDate       DateTime
+  rotationWeeks Int
+  assignments   Assignment[]
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+}
+
+model Assignment {
+  id         String   @id @default(cuid())
+  day        Day
+  period     Int
+  week       Int
+  class      Class    @relation(fields: [classId], references: [id], onDelete: Cascade)
+  classId    String
+  schedule   Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+  scheduleId String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([scheduleId, day, period, week])
+}
+
+enum Day {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+}

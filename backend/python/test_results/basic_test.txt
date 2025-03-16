@@ -1,0 +1,15 @@
+
+=== Testing Basic Solver ===
+Solver status: success
+Solve time: 0.04 seconds
+Found 4 assignments
+
+MONDAY:
+  Week 1, Period 2: Class 2A
+  Week 1, Period 4: Class 2B
+  Week 1, Period 7: Class 1B
+
+TUESDAY:
+  Week 1, Period 1: Class 1A
+
+Validation result: Valid

@@ -1,0 +1,20 @@
+
+=== Testing Max Classes Per Day ===
+
+Testing with maxClassesPerDay = 2
+Solver status: success
+Solve time: 0.01 seconds
+Validation result: Valid
+Max classes per day constraint satisfied: True
+
+Testing with maxClassesPerDay = 3
+Solver status: success
+Solve time: 0.01 seconds
+Validation result: Valid
+Max classes per day constraint satisfied: True
+
+Testing with maxClassesPerDay = 4
+Solver status: success
+Solve time: 0.01 seconds
+Validation result: Valid
+Max classes per day constraint satisfied: True

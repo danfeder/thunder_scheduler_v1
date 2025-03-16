@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client';
 import classRoutes from './routes/class.routes';
+import scheduleRoutes from './routes/schedule.routes';
 import { errorHandler } from './middleware/error.middleware';
 
 // Initialize environment variables
@@ -29,6 +30,7 @@ app.use((req: Request, _res: Response, next: NextFunction) => {
 
 // API Routes
 app.use('/api/classes', classRoutes);
+app.use('/api/schedules', scheduleRoutes);
 
 // Health check endpoint
 app.get('/health', (_req: Request, res: Response) => {

@@ -15,7 +15,8 @@
     "test": "jest",
     "clean": "rm -rf build",
     "prebuild": "npm run clean",
-    "prepare-db": "npm run prisma:generate && npm run prisma:migrate"
+    "prepare-db": "npm run prisma:generate && npm run prisma:migrate",
+    "test-solver": "ts-node src/test-solver.ts"
   },
   "keywords": [],
   "author": "",
@@ -25,6 +26,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
+    "python-shell": "^5.0.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4"
   },

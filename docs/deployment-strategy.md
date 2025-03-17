@@ -160,6 +160,27 @@
    # Database
    # Use Docker for local PostgreSQL
    docker-compose up -d
+   
+   # Python Setup (for OR-Tools)
+   cd backend/python
+   pip install -r requirements.txt
+   ```
+
+2. **Python Integration Setup**
+   ```bash
+   # Install Python 3.8+ and pip
+   # macOS
+   brew install python
+   
+   # Ubuntu/Debian
+   sudo apt install python3 python3-pip
+   
+   # Install OR-Tools and dependencies
+   cd backend/python
+   pip install -r requirements.txt
+   
+   # Configure environment variables in .env
+   PYTHON_PATH=python3  # or path to your Python executable
    ```
 
 2. **Testing Environment**
@@ -171,6 +192,48 @@
    - Automated deployments on main branch
    - Manual promotion if needed
    - Database migration safety checks
+
+## Python Integration Deployment
+
+### Render Configuration
+When deploying the backend to Render, additional configuration is needed to support the Python OR-Tools integration:
+
+1. **Build Command Updates**
+   ```bash
+   # Install both Node.js and Python dependencies
+   npm install && cd python && pip install -r requirements.txt && cd .. && npm run build
+   ```
+
+2. **Environment Variables**
+   ```
+   PYTHON_PATH=/usr/bin/python3
+   ```
+
+3. **Runtime Dependencies**
+   Add the following to the Render dashboard under "Environment" > "Runtime Dependencies":
+   - python3
+   - python3-pip
+
+### Docker Configuration Updates
+The Docker configuration should be updated to include Python and OR-Tools:
+
+```dockerfile
+# Add to backend Dockerfile
+RUN apt-get update && apt-get install -y python3 python3-pip
+COPY python/requirements.txt /app/python/
+RUN pip3 install -r /app/python/requirements.txt
+```
+
+Update docker-compose.yml:
+```yaml
+services:
+  backend:
+    build: ./backend
+    # ... existing configuration
+    environment:
+      # ... existing environment variables
+      PYTHON_PATH: python3
+```
 
 ## Scaling Considerations
 

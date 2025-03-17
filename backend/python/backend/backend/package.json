@@ -1,0 +1,10 @@
+{
+  "devDependencies": {
+    "@fast-csv/format": "^5.0.2",
+    "@fast-csv/parse": "^5.0.2",
+    "@types/node": "^22.13.10"
+  },
+  "dependencies": {
+    "fast-csv": "^5.0.2"
+  }
+}

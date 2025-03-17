@@ -122,6 +122,7 @@ interface TeacherAvailability {
    - Basic solver setup
    - Constraint modeling
    - Solution validation
+   - Python integration with Node.js
 
 4. Basic Constraint Model (4 days)
    - Class conflict implementation
@@ -197,7 +198,40 @@ interface TeacherAvailability {
    - End of day handling
    - Exception management
 
-### OR-Tools Integration
+### OR-Tools Integration Strategy
+
+#### Python Integration with Node.js
+The Thunder Scheduler will use Google OR-Tools' Python implementation for constraint solving, integrated with the Node.js backend using the python-shell package. This approach provides:
+
+1. **Direct access to OR-Tools' full capabilities** through its native Python API
+2. **Simple deployment** as a single service
+3. **Clean separation** between business logic and constraint solving
+4. **Efficient data passing** between Node.js and Python
+
+#### Integration Architecture
+- Node.js backend communicates with Python scripts via python-shell
+- Python scripts use OR-Tools to solve constraint problems
+- Data is passed as JSON between Node.js and Python
+- Results are returned to Node.js for database storage and API responses
+
+#### Python Component Structure
+```
+backend/
+├── python/
+│   ├── requirements.txt
+│   ├── solver/
+│   │   ├── constraint_solver.py
+│   │   ├── model_builder.py
+│   │   └── solution_validator.py
+│   └── tests/
+```
+
+#### Node.js Integration Components
+- **SolverService**: Interfaces with Python scripts via python-shell
+- **ScheduleService**: Uses SolverService to generate and validate schedules
+- **ScheduleController**: Exposes API endpoints for schedule operations
+
+#### Constraint Model Implementation
 ```python
 # Pseudo-code for constraint model
 solver = cp_model.CpSolver()

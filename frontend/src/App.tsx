@@ -1,19 +1,65 @@
-import { ScheduleProvider } from './context/ScheduleContext';
-import ScheduleDisplay from './components/schedule/ScheduleDisplay';
-import ClassList from './components/schedule/ClassList';
-import Card from './components/shared/Card';
-import Button from './components/shared/Button';
 import { useState } from 'react';
+import { ScheduleProvider } from './context/ScheduleContext';
+import ScheduleComponent from './components/schedule';
+import './styles/schedule.css';
 
 function App() {
   const [selectedClassId, setSelectedClassId] = useState<string | undefined>();
 
   // Temporary mock data for development
-  const mockClasses = [
-    { id: '1', name: 'Math 101', gradeLevel: 5, conflicts: [] },
-    { id: '2', name: 'Science 101', gradeLevel: 5, conflicts: [] },
-    { id: '3', name: 'English 101', gradeLevel: 5, conflicts: [] },
+  const mockSchedule = {
+    id: '1',
+    startDate: '2025-03-17',
+    endDate: '2025-06-17',
+    rotationWeeks: 2,
+    assignments: [
+      { classId: '1', day: 'Monday' as const, period: 1, week: 1 },
+      { classId: '2', day: 'Tuesday' as const, period: 2, week: 1 },
+      { classId: '3', day: 'Wednesday' as const, period: 3, week: 1 },
+    ],
+    periods: Array.from({ length: 8 }, (_, i) => ({
+      id: i + 1,
+      startTime: `${8 + Math.floor(i / 2)}:${i % 2 === 0 ? '00' : '30'}`,
+      endTime: `${8 + Math.floor((i + 1) / 2)}:${i % 2 === 0 ? '30' : '00'}`,
+    })),
+  };
+
+  const mockConflicts = [
+    {
+      classId: '1',
+      day: 'Monday' as const,
+      period: 1,
+      type: 'teacher' as const,
+      message: 'Teacher unavailable',
+    },
+    {
+      classId: '2',
+      day: 'Tuesday' as const,
+      period: 2,
+      type: 'class' as const,
+      message: 'Class conflict',
+    },
   ];
+
+  const mockClassGrades = {
+    '1': 5,
+    '2': 4,
+    '3': 3,
+  };
+
+  const handleClassConflictsChange = (
+    classId: string,
+    conflicts: { day: string; periods: number[] }[]
+  ) => {
+    console.log('Class conflicts updated:', { classId, conflicts });
+  };
+
+  const handleInstructorAvailabilityChange = (
+    teacherId: string,
+    blockedPeriods: { date: string; period: number }[]
+  ) => {
+    console.log('Instructor availability updated:', { teacherId, blockedPeriods });
+  };
 
   return (
     <ScheduleProvider>
@@ -30,39 +76,14 @@ function App() {
 
         {/* Main content */}
         <main className="py-6">
-          <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            {/* Schedule Actions */}
-            <div className="px-4 sm:px-0 mb-6">
-              <Card>
-                <div className="flex justify-between items-center">
-                  <div className="space-x-4">
-                    <Button variant="primary">Create New Schedule</Button>
-                    <Button variant="secondary">Import Schedule</Button>
-                  </div>
-                  <Button variant="secondary">Export Schedule</Button>
-                </div>
-              </Card>
-            </div>
-
-            {/* Grid Layout */}
-            <div className="px-4 sm:px-0">
-              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                {/* Class List - 1/4 width on large screens */}
-                <div className="lg:col-span-1">
-                  <ClassList
-                    classes={mockClasses}
-                    isLoading={false}
-                    onClassSelect={setSelectedClassId}
-                    selectedClassId={selectedClassId}
-                  />
-                </div>
-
-                {/* Schedule Display - 3/4 width on large screens */}
-                <div className="lg:col-span-3">
-                  <ScheduleDisplay />
-                </div>
-              </div>
-            </div>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <ScheduleComponent
+              schedule={mockSchedule}
+              conflicts={mockConflicts}
+              classGrades={mockClassGrades}
+              onClassConflictsChange={handleClassConflictsChange}
+              onInstructorAvailabilityChange={handleInstructorAvailabilityChange}
+            />
           </div>
         </main>
       </div>

@@ -1,50 +1,20 @@
-import React, { HTMLAttributes } from 'react';
+import React from 'react';
 
-interface CardProps extends HTMLAttributes<HTMLDivElement> {
+interface CardProps {
   title?: string;
-  subtitle?: string;
-  footer?: React.ReactNode;
-  noPadding?: boolean;
+  className?: string;
+  children: React.ReactNode;
 }
 
-const Card: React.FC<CardProps> = ({
-  children,
-  title,
-  subtitle,
-  footer,
-  noPadding = false,
-  className = '',
-  ...props
-}) => {
-  const baseClasses = 'bg-white rounded-lg shadow-md overflow-hidden';
-  const classes = [baseClasses, className].join(' ');
-
+const Card: React.FC<CardProps> = ({ title, className = '', children }) => {
   return (
-    <div className={classes} {...props}>
-      {(title || subtitle) && (
+    <div className={`bg-white rounded-lg shadow-md ${className}`}>
+      {title && (
         <div className="px-6 py-4 border-b border-gray-200">
-          {title && (
-            <h3 className="text-lg font-medium leading-6 text-gray-900">
-              {title}
-            </h3>
-          )}
-          {subtitle && (
-            <p className="mt-1 text-sm text-gray-500">
-              {subtitle}
-            </p>
-          )}
+          <h2 className="text-xl font-semibold text-gray-900">{title}</h2>
         </div>
       )}
-      
-      <div className={noPadding ? '' : 'p-6'}>
-        {children}
-      </div>
-
-      {footer && (
-        <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
-          {footer}
-        </div>
-      )}
+      {children}
     </div>
   );
 };

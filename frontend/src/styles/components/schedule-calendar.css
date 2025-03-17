@@ -1,0 +1,109 @@
+/* ScheduleCalendar specific styles */
+.schedule-calendar {
+  @apply grid gap-1;
+  grid-template-columns: auto repeat(5, minmax(150px, 1fr));
+}
+
+.schedule-cell {
+  @apply p-2 border rounded min-h-[80px] relative transition-colors duration-150;
+  background-color: theme('colors.gray.50');
+}
+
+.schedule-cell:hover {
+  background-color: theme('colors.gray.100');
+}
+
+.schedule-cell.has-conflict {
+  @apply bg-red-50;
+}
+
+.schedule-header {
+  @apply font-semibold text-center p-2;
+}
+
+.schedule-period {
+  @apply text-sm text-gray-600 text-right pr-4 font-medium;
+  min-width: 5rem;
+}
+
+/* Class cards within schedule cells */
+.schedule-class-card {
+  @apply mb-1 last:mb-0;
+}
+
+/* Grade level colors */
+.grade-1 {
+  @apply bg-blue-100 text-blue-800 border-blue-200;
+}
+
+.grade-2 {
+  @apply bg-green-100 text-green-800 border-green-200;
+}
+
+.grade-3 {
+  @apply bg-yellow-100 text-yellow-800 border-yellow-200;
+}
+
+.grade-4 {
+  @apply bg-purple-100 text-purple-800 border-purple-200;
+}
+
+.grade-5 {
+  @apply bg-pink-100 text-pink-800 border-pink-200;
+}
+
+/* Conflict indicators */
+.conflict-indicator {
+  @apply absolute top-0 right-0 -mt-1 -mr-1;
+}
+
+.conflict-dot {
+  @apply flex h-3 w-3;
+}
+
+.conflict-ping {
+  @apply animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75;
+}
+
+.conflict-dot-static {
+  @apply relative inline-flex rounded-full h-3 w-3 bg-red-500;
+}
+
+/* Week controls */
+.week-controls {
+  @apply flex items-center justify-between mb-4;
+}
+
+.week-indicator {
+  @apply text-lg font-semibold;
+}
+
+/* Grade filters */
+.grade-filters {
+  @apply flex items-center space-x-2 mb-4;
+}
+
+.grade-filter-label {
+  @apply text-sm text-gray-600;
+}
+
+/* Responsive adjustments */
+@media (max-width: theme('screens.lg')) {
+  .schedule-calendar {
+    grid-template-columns: auto repeat(5, minmax(120px, 1fr));
+  }
+
+  .schedule-cell {
+    @apply min-h-[70px] p-1;
+  }
+}
+
+@media (max-width: theme('screens.md')) {
+  .schedule-calendar {
+    grid-template-columns: auto repeat(5, minmax(100px, 1fr));
+  }
+
+  .schedule-cell {
+    @apply min-h-[60px];
+  }
+}

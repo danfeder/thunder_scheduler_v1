@@ -1,0 +1,108 @@
+/* Schedule component layout */
+.schedule-layout {
+  @apply space-y-6 max-w-7xl mx-auto;
+}
+
+/* Component sections */
+.schedule-section {
+  @apply bg-white rounded-lg shadow-md overflow-hidden;
+}
+
+/* Class manager section */
+.class-manager {
+  @apply w-full;
+}
+
+/* Management tools grid */
+.management-grid {
+  @apply grid grid-cols-1 lg:grid-cols-2 gap-6;
+}
+
+.management-grid > * {
+  @apply h-full;
+}
+
+/* Card layouts */
+.schedule-card {
+  @apply h-full flex flex-col;
+}
+
+.schedule-card-header {
+  @apply p-4 border-b border-gray-200;
+}
+
+.schedule-card-body {
+  @apply p-4 flex-1 overflow-auto;
+}
+
+/* Common table styles */
+.schedule-table {
+  @apply min-w-full border-collapse;
+}
+
+.schedule-table th {
+  @apply px-4 py-2 bg-gray-50 border text-sm font-medium text-gray-700;
+}
+
+.schedule-table td {
+  @apply px-4 py-2 border;
+}
+
+/* Grid headers */
+.grid-header {
+  @apply font-semibold text-center p-2 text-gray-700;
+}
+
+.grid-period {
+  @apply text-sm text-gray-600 text-right pr-4 font-medium;
+}
+
+/* Responsive adjustments */
+@media (max-width: theme('screens.lg')) {
+  .management-grid {
+    @apply grid-cols-1 gap-4;
+  }
+}
+
+/* Animations */
+.fade-in {
+  @apply transition-opacity duration-200;
+}
+
+.fade-in-enter {
+  @apply opacity-0;
+}
+
+.fade-in-enter-active {
+  @apply opacity-100;
+}
+
+/* Status indicators */
+.status-indicator {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+}
+
+.status-success {
+  @apply bg-green-100 text-green-800;
+}
+
+.status-warning {
+  @apply bg-yellow-100 text-yellow-800;
+}
+
+.status-error {
+  @apply bg-red-100 text-red-800;
+}
+
+/* Helper classes */
+.full-width {
+  @apply w-full;
+}
+
+.full-height {
+  @apply h-full;
+}
+
+.overflow-container {
+  @apply overflow-x-auto;
+}

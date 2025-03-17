@@ -1,0 +1,27 @@
+/* ConflictGrid specific styles */
+.conflict-grid {
+  @apply grid gap-1;
+  grid-template-columns: auto repeat(5, 1fr);
+}
+
+.conflict-cell {
+  @apply p-2 border rounded flex items-center justify-center transition-colors duration-150 cursor-pointer;
+  min-height: 2.5rem;
+}
+
+.conflict-cell.is-blocked {
+  @apply bg-red-100 hover:bg-red-200;
+}
+
+.conflict-cell.is-available {
+  @apply bg-gray-50 hover:bg-gray-100;
+}
+
+.conflict-header {
+  @apply font-semibold text-center p-2 text-gray-700;
+}
+
+.conflict-period {
+  @apply text-sm text-gray-600 text-right pr-4 font-medium;
+  min-width: 5rem;
+}

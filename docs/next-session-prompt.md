@@ -14,7 +14,7 @@ We've completed several phases of the project:
 - CSV Import/Export functionality with validation
 
 All code is in the GitHub repository: https://github.com/danfeder/thunder_scheduler_v1
-We're currently on the `feature/csv-import-export` branch.
+We're currently on the `feature/basic-ui` branch.
 
 ## Next Task: Basic UI Implementation
 According to our progress tracker (docs/progress-tracker.md), we've completed Phase 1, Step 5: CSV Import/Export and are now moving to Phase 1, Step 6: Basic UI Implementation. This involves:

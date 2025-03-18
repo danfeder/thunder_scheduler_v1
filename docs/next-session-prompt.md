@@ -1,4 +1,4 @@
-# Thunder Scheduler: Initial Integration Phase
+# Thunder Scheduler: Initial Integration Phase - Component API Integration
 
 ## Project Context
 I'm working on the Thunder Scheduler project, a cooking class scheduler application that helps organize classes for 33 elementary school classes around existing schedule constraints. The project uses a constraint satisfaction approach with Google OR-Tools.
@@ -14,16 +14,20 @@ We've completed several phases of the project:
 - CSV Import/Export functionality with validation
 - Basic UI implementation with core components, state management, and API integration
 - Schedule Visualization with specialized components for different use cases
-- Error handling infrastructure and React Query integration (partial completion of Initial Integration)
+- Error handling infrastructure and React Query integration
+- MSW setup for API mocking in tests
+- Container components with mock services for all visualization components
+- Integration tests with mock services for all components
 
 All code is in the GitHub repository: https://github.com/danfeder/thunder_scheduler_v1
 We're currently on the `feature/initial-integration` branch.
 
-## Next Task: Complete Initial Integration
-According to our progress tracker (docs/progress-tracker.md), we've partially completed Phase 1, Step 8: Initial Integration. We've implemented the error handling infrastructure and React Query setup, but still need to:
-- Connect visualization components to backend APIs
-- Implement component-specific integration tests
-- Set up MSW for API mocking in tests
+## Next Task: Replace Mock Services with Real API Implementations
+According to our updated progress tracker (docs/progress-tracker.md), we've made significant progress on Phase 1, Step 8: Initial Integration. We've implemented container components with mock services for all visualization components and created integration tests that are passing with these mock services. Now we need to:
+- Replace mock services with real API implementations
+- Update App.tsx to use the container components
+- Test with real backend APIs
+- Add tests for edge cases and error scenarios
 
 ## Key Documentation
 Please refer to these files for detailed context:
@@ -42,27 +46,28 @@ Please refer to these files for detailed context:
 - frontend/src/hooks/useErrorHandler.ts: Error handling hooks
 - frontend/src/utils/error/: Error handling utilities
 - frontend/src/services/scheduleService.ts: Service for schedule-related API operations
+- frontend/src/test/: Testing infrastructure including MSW setup, fixtures, and utilities
 
 ## Technical Requirements
-The Initial Integration implementation needs to handle:
+The Component API Integration implementation needs to handle:
 
-1. API Endpoints:
-   - Connect frontend components to backend services *(infrastructure in place, need component-specific implementation)*
-   - Implement proper data fetching and submission *(React Query hooks created, need component integration)*
-   - Handle asynchronous operations gracefully *(loading states and error handling needed)*
-   - Ensure type safety between frontend and backend *(type definitions in place)*
+1. API Integration:
+   - Connect frontend components to backend services
+   - Implement proper data fetching and submission
+   - Handle asynchronous operations gracefully
+   - Ensure type safety between frontend and backend
 
-2. Error Handling:
-   - Implement comprehensive error handling for API calls *(✓ completed)*
-   - Display user-friendly error messages *(✓ completed)*
-   - Add error boundaries for component failures *(✓ completed)*
-   - Implement retry mechanisms where appropriate *(✓ completed)*
+2. Component-Specific Integration:
+   - ClassConflictManager: Connect to conflict management endpoints
+   - InstructorAvailability: Connect to teacher availability API
+   - GeneratedSchedule: Connect to schedule generation and retrieval endpoints
+   - Implement loading states for all components
 
-3. Basic Testing:
-   - Integration tests for API endpoints *(MSW setup needed)*
-   - End-to-end testing of key workflows *(component integration tests needed)*
-   - Test error scenarios and recovery *(error testing utilities in place)*
-   - Ensure proper data validation *(type validation in place)*
+3. Integration Testing:
+   - Leverage MSW setup for API mocking
+   - Test component integration with backend services
+   - Test error scenarios and recovery
+   - Ensure proper data validation
 
 ## Current Implementation
 We've successfully implemented:
@@ -70,7 +75,14 @@ We've successfully implemented:
   - ClassConflictManager: Simple grid for toggling class conflicts
   - InstructorAvailability: Date-based calendar for teacher scheduling
   - GeneratedSchedule: Complex calendar for displaying the final schedule
+- Container components for all visualization components:
+  - ClassConflictManagerContainer: With mock service for class data and conflicts
+  - InstructorAvailabilityContainer: With mock service for availability data
+  - GeneratedScheduleContainer: With mock service for schedule, conflicts, and classes
+- Loading states and error handling in all container components
+- Optimistic updates for mutations
 - Comprehensive test suite for all visualization components
+- Integration tests with mock services for all components
 - Logical input-to-output flow layout
 - Grade-based filtering and week rotation support
 - Conflict highlighting and visualization
@@ -84,28 +96,39 @@ We've successfully implemented:
   - Schedule-specific query hooks
   - Mutation hooks with optimistic updates
   - Type-safe API integration
+- MSW testing infrastructure:
+  - Server setup and configuration
+  - API endpoint handlers
+  - Test fixtures and utilities
+  - Integration tests for all components
 
 ## Specific Tasks
-1. Complete API Integration:
-   - Connect ClassConflictManager to backend conflict management endpoints
-   - Integrate InstructorAvailability with teacher availability API
-   - Link GeneratedSchedule with schedule generation and retrieval endpoints
-   - Implement component-specific loading states
+1. Replace Mock Services with Real API Implementations:
+   - Update scheduleService.ts to include methods for all required API operations
+   - Replace mock services in ClassConflictManagerContainer with real API calls
+   - Replace mock services in InstructorAvailabilityContainer with real API calls
+   - Replace mock services in GeneratedScheduleContainer with real API calls
+   - Ensure proper error handling for real API responses
 
-2. Set up Testing Infrastructure:
-   - Install and configure MSW for API mocking
-   - Create handlers for all API endpoints
-   - Set up test fixtures and utilities
-   - Add integration test setup
+2. Update App.tsx to Use Container Components:
+   - Replace direct component usage with container components
+   - Ensure proper props are passed to containers
+   - Test the application flow with container components
 
-3. Implement Component Integration Tests:
-   - Test ClassConflictManager API integration
-   - Test InstructorAvailability API integration
-   - Test GeneratedSchedule API integration
-   - Test error scenarios and recovery
+3. Test with Real Backend APIs:
+   - Update integration tests to work with real APIs
+   - Add tests for edge cases and error scenarios
+   - Implement performance monitoring
+   - Ensure proper data validation
 
 ## Implementation Approach
-- Continue using React with TypeScript for type safety
+- Continue using the container component pattern we've established:
+  - Presentational components focus on UI and user interactions
+  - Container components handle data fetching, state management, and error handling
+- Update the scheduleService.ts to include all required API methods:
+  - Methods for fetching and updating class conflicts
+  - Methods for fetching and updating teacher availability
+  - Methods for fetching and updating schedules
 - Use the existing error handling infrastructure:
   - ErrorContext for global error state
   - ScheduleErrorBoundary for component-level error handling
@@ -115,8 +138,7 @@ We've successfully implemented:
   - useUpdateSchedule for modifying schedules
   - useGenerateSchedule for creating new schedules
   - Other specialized hooks for specific operations
-- Follow the example in ScheduleExample.tsx for proper integration patterns
-- Implement MSW for API mocking in tests
+- Update integration tests to work with real APIs
 - Ensure responsive design and accessibility
 
-Please help me complete the Initial Integration functionality for the Thunder Scheduler project, focusing on connecting the three main visualization components to the backend services and implementing comprehensive integration tests.
+Please help me replace the mock services with real API implementations in the Thunder Scheduler project, focusing on updating the scheduleService.ts file, connecting the container components to the backend services, and updating the integration tests to work with real APIs.

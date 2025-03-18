@@ -47,9 +47,12 @@
 - [ ] API endpoints
 - [x] Error handling infrastructure
 - [x] React Query integration
-- [ ] Component-specific API integration
+- [x] Component container implementation with mock services
+- [ ] Connect components to real backend APIs
 - [x] Basic testing framework
-- [ ] Component integration tests
+- [x] MSW setup for API mocking
+- [x] Component integration tests with mock services
+- [ ] Integration tests with real backend APIs
 
 ## Phase 2: Enhanced UI and Manual Adjustments (3 weeks)
 
@@ -83,8 +86,11 @@
 - Partially completed Phase 1, Step 8 (Initial Integration):
   - Implemented error handling infrastructure
   - Set up React Query for data fetching
-  - Created example components and tests
-  - Remaining: Component-specific API integration
+  - Created container components with mock services
+  - Implemented loading states and error handling
+  - Created integration tests with mock services
+  - Set up MSW for API mocking in tests
+  - Remaining: Connect components to real backend APIs
 - Implemented Schedule Visualization with three distinct components:
   - ClassConflictManager: Simple grid for toggling class conflicts
   - InstructorAvailability: Date-based calendar for teacher scheduling
@@ -105,5 +111,11 @@
 - Detailed UI implementation plan documented in docs/basic-ui-implementation-plan.md
 - Schedule visualization implemented according to revised plan in docs/schedule-visualization-plan-revised.md
 - Error handling infrastructure and React Query integration completed
-- Next steps: Integrate ClassConflictManager with backend APIs
-- Detailed integration plan and progress tracking in docs/initial-integration-plan.md
+- MSW setup for API mocking in tests completed
+- Container components implemented with mock services
+- Integration tests passing with mock services
+- Next steps:
+  1. Replace mock services with real API implementations
+  2. Update App.tsx to use container components
+  3. Test with real backend APIs
+- Detailed integration plan and progress tracking in docs/initial-integration-plan.md and docs/component-api-integration-plan.md

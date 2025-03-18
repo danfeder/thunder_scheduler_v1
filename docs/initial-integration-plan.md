@@ -57,19 +57,52 @@ const ErrorContext = createContext<ErrorContextType>(null);
 
 ### 2. API Integration
 
-#### 2.1 ClassConflictManager Integration
-- Connect to conflict management endpoints
-- Handle optimistic updates
-- Implement error states
-- Add loading indicators
-- Integrate with ScheduleContext
+#### 2.1 Component Integration Overview
+```mermaid
+graph TD
+    subgraph "Frontend Components"
+        CM[ClassConflictManager]
+        IA[InstructorAvailability]
+        GS[GeneratedSchedule]
+    end
+    
+    subgraph "Integration Layer"
+        QH[Query Hooks]
+        OP[Optimistic Updates]
+        EH[Error Handling]
+        LS[Loading States]
+    end
+    
+    subgraph "Backend Services"
+        CE[Conflict Endpoints]
+        AE[Availability Endpoints]
+        SE[Schedule Endpoints]
+    end
+    
+    CM --> QH --> CE
+    CM --> OP
+    IA --> QH --> AE
+    IA --> LS
+    GS --> QH --> SE
+    GS --> EH
+```
+
+#### 2.2 ClassConflictManager Integration
+```mermaid
+graph TD
+    A[Setup Query Hooks] --> B[Connect API]
+    B --> C[Add Loading States]
+    C --> D[Error Handling]
+    D --> E[Optimistic Updates]
+    E --> F[Component Tests]
+```
 
 ```typescript
 const useConflictManager = (classId: string) => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: (conflicts: DailyConflicts[]) => 
+    mutationFn: (conflicts: DailyConflicts[]) =>
       scheduleService.updateConflicts(classId, conflicts),
     onError: (error: ApiError) => {
       handleScheduleError(error);
@@ -81,12 +114,22 @@ const useConflictManager = (classId: string) => {
 };
 ```
 
-#### 2.2 InstructorAvailability Integration
-- Connect to teacher availability API
-- Implement date-based queries
-- Handle recurring availability patterns
-- Add error handling
-- Integrate with date navigation
+Implementation steps:
+- Connect to conflict management endpoints
+- Handle optimistic updates
+- Implement error states
+- Add loading indicators
+- Integrate with ScheduleContext
+
+#### 2.3 InstructorAvailability Integration
+```mermaid
+graph TD
+    A[Setup Query Hooks] --> B[Connect API]
+    B --> C[Date-based Queries]
+    C --> D[Recurring Patterns]
+    D --> E[Loading States]
+    E --> F[Component Tests]
+```
 
 ```typescript
 const useTeacherAvailability = (date: Date) => {
@@ -100,7 +143,24 @@ const useTeacherAvailability = (date: Date) => {
 };
 ```
 
-#### 2.3 GeneratedSchedule Integration
+Implementation steps:
+- Connect to teacher availability API
+- Implement date-based queries
+- Handle recurring availability patterns
+- Add error handling
+- Integrate with date navigation
+
+#### 2.4 GeneratedSchedule Integration
+```mermaid
+graph TD
+    A[Setup Query Hooks] --> B[Connect API]
+    B --> C[Real-time Updates]
+    C --> D[Week Rotation]
+    D --> E[Loading States]
+    E --> F[Component Tests]
+```
+
+Implementation steps:
 - Connect to schedule generation API
 - Implement real-time updates
 - Add loading states
@@ -109,42 +169,152 @@ const useTeacherAvailability = (date: Date) => {
 
 ### 3. Testing Infrastructure
 
-#### 3.1 Integration Test Setup
-```typescript
-// Mock server setup
-import { setupServer } from 'msw/node';
-import { rest } from 'msw';
+#### 3.1 Testing Architecture Overview
+```mermaid
+graph TD
+    subgraph "Test Environment"
+        MS[MSW Server]
+        TU[Test Utils]
+        FX[Test Fixtures]
+    end
 
-const handlers = [
-  rest.get('/api/schedule/:id', (req, res, ctx) => {
-    return res(ctx.json(mockSchedule));
-  }),
-  // Additional handlers...
-];
+    subgraph "Test Suites"
+        IT[Integration Tests]
+        UT[Unit Tests]
+        ET[Error Tests]
+        PT[Performance Tests]
+    end
 
-const server = setupServer(...handlers);
+    subgraph "Mock API"
+        SH[Schedule Handlers]
+        CH[Conflict Handlers]
+        AH[Availability Handlers]
+    end
+
+    MS --> IT
+    MS --> ET
+    TU --> IT
+    TU --> UT
+    FX --> IT
+    FX --> ET
+
+    SH --> MS
+    CH --> MS
+    AH --> MS
+
+    style MS fill:#f9f,stroke:#333,stroke-width:2px
+    style IT fill:#bbf,stroke:#333,stroke-width:2px
 ```
 
-#### 3.2 Component Integration Tests
+#### 3.2 MSW Setup and Configuration
 ```typescript
+// src/test/handlers/schedule.ts
+import { rest } from 'msw';
+import { mockSchedule, mockConflicts, mockAvailability } from '../fixtures';
+
+export const scheduleHandlers = [
+  // Schedule endpoints
+  rest.get('/api/schedule/:id', (req, res, ctx) => {
+    const { id } = req.params;
+    return res(ctx.json(mockSchedule(id)));
+  }),
+  rest.post('/api/schedule/generate', (req, res, ctx) => {
+    return res(ctx.json(mockSchedule('new')));
+  }),
+
+  // Conflict management endpoints
+  rest.get('/api/conflicts/:classId', (req, res, ctx) => {
+    const { classId } = req.params;
+    return res(ctx.json(mockConflicts(classId)));
+  }),
+  rest.put('/api/conflicts/:classId', (req, res, ctx) => {
+    return res(ctx.status(200));
+  }),
+
+  // Availability endpoints
+  rest.get('/api/availability/:date', (req, res, ctx) => {
+    const { date } = req.params;
+    return res(ctx.json(mockAvailability(date)));
+  }),
+  rest.put('/api/availability', (req, res, ctx) => {
+    return res(ctx.status(200));
+  })
+];
+
+// src/test/server.ts
+import { setupServer } from 'msw/node';
+import { scheduleHandlers } from './handlers/schedule';
+
+export const server = setupServer(...scheduleHandlers);
+
+// src/test/fixtures/index.ts
+export const mockSchedule = (id: string) => ({
+  id,
+  classes: [],
+  conflicts: [],
+  generated: true
+});
+
+export const mockConflicts = (classId: string) => ({
+  classId,
+  conflicts: []
+});
+
+export const mockAvailability = (date: string) => ({
+  date,
+  slots: []
+});
+
+// src/test/utils/test-utils.tsx
+import { render } from '@testing-library/react';
+import { ErrorProvider } from '../../context/error/ErrorContext';
+import { QueryProvider } from '../../context/QueryProvider';
+
+export const renderWithProviders = (ui: React.ReactElement) => {
+  return render(
+    <ErrorProvider>
+      <QueryProvider>
+        {ui}
+      </QueryProvider>
+    </ErrorProvider>
+  );
+};
+```
+
+#### 3.3 Component Integration Tests
+```typescript
+import { server } from '../test/server';
+import { renderWithProviders } from '../test/utils/test-utils';
+import { mockSchedule } from '../test/fixtures';
+
 describe('Schedule Integration', () => {
-  // ClassConflictManager tests
-  it('handles conflict updates', async () => {
-    render(<ClassConflictManager classId="123" />);
-    // Test implementation...
+  beforeAll(() => server.listen());
+  afterEach(() => server.resetHandlers());
+  afterAll(() => server.close());
+
+  describe('ClassConflictManager', () => {
+    it('handles conflict updates', async () => {
+      renderWithProviders(<ClassConflictManager classId="123" />);
+      await waitFor(() => {
+        expect(screen.getByTestId('conflict-grid')).toBeInTheDocument();
+      });
+      // Additional assertions...
+    });
+
+    it('displays error state on API failure', async () => {
+      server.use(
+        rest.get('/api/conflicts/:classId', (req, res, ctx) => {
+          return res(ctx.status(500));
+        })
+      );
+      renderWithProviders(<ClassConflictManager classId="123" />);
+      await waitFor(() => {
+        expect(screen.getByText(/error/i)).toBeInTheDocument();
+      });
+    });
   });
 
-  // InstructorAvailability tests
-  it('displays teacher availability', async () => {
-    render(<InstructorAvailability />);
-    // Test implementation...
-  });
-
-  // GeneratedSchedule tests
-  it('displays generated schedule', async () => {
-    render(<GeneratedSchedule />);
-    // Test implementation...
-  });
+  // Similar test structure for InstructorAvailability and GeneratedSchedule
 });
 ```
 
@@ -231,35 +401,39 @@ After completing this integration phase:
 
 ### API Integration
 #### ClassConflictManager
-- [ ] Connect to conflict management endpoints
-- [ ] Handle optimistic updates
-- [ ] Implement error states
-- [ ] Add loading indicators
-- [ ] Integrate with ScheduleContext
+- [x] Create container component with mock service
+- [x] Implement loading states
+- [x] Implement error handling
+- [x] Add optimistic updates
+- [ ] Connect to real backend API endpoints
 
 #### InstructorAvailability
-- [ ] Connect to teacher availability API
-- [ ] Implement date-based queries
-- [ ] Handle recurring availability patterns
-- [ ] Add error handling
-- [ ] Integrate with date navigation
+- [x] Create container component with mock service
+- [x] Implement date-based queries
+- [x] Add loading states
+- [x] Add error handling
+- [x] Integrate with date navigation
+- [ ] Connect to real backend API endpoints
 
 #### GeneratedSchedule
-- [ ] Connect to schedule generation API
-- [ ] Implement real-time updates
-- [ ] Add loading states
-- [ ] Handle complex error scenarios
-- [ ] Support week rotation
+- [x] Create container component with mock service
+- [x] Implement loading states
+- [x] Add error handling
+- [x] Support week rotation
+- [ ] Connect to real backend API endpoints
 
 ### Testing Infrastructure
 - [x] Set up test environment
 - [x] Create example component tests
-- [ ] Setup MSW test server
-- [ ] Add handlers for all endpoints
-- [ ] Add integration tests for ClassConflictManager
-- [ ] Add integration tests for InstructorAvailability
-- [ ] Add integration tests for GeneratedSchedule
-- [ ] Test error scenarios
+- [x] Setup MSW test server
+- [x] Add handlers for all endpoints
+- [x] Create test fixtures
+- [x] Add example integration test
+- [x] Add integration tests for ClassConflictManager with mock services
+- [x] Add integration tests for InstructorAvailability with mock services
+- [x] Add integration tests for GeneratedSchedule with mock services
+- [ ] Test with real backend APIs
+- [ ] Test error scenarios with real APIs
 - [ ] Add performance monitoring
 
 ### Performance Optimizations
@@ -277,29 +451,33 @@ After completing this integration phase:
 - [ ] Create migration guide
 
 ## Current Status
-As of March 17, 2025:
+As of March 18, 2025:
 - Completed basic error handling infrastructure
 - Set up React Query with proper configuration
-- Created example components and tests
-- **BLOCKED**: Main component integration pending
-- **NEEDED**: MSW setup for testing
-- **NEXT**: Begin ClassConflictManager integration
+- Created container components with mock services for all three visualization components
+- Implemented loading states and error handling in all container components
+- Added optimistic updates for mutations
+- Created integration tests with mock services for all components
+- Implemented MSW setup for API mocking in tests
+- **COMPLETED**: Container components with mock services
+- **NEXT**: Replace mock services with real API implementations
 
 ## Revised Timeline
-1. Week 1 (Current)
-   - Complete ClassConflictManager integration
+1. Week 1 (Completed)
    - Set up MSW and testing infrastructure
-   - Add first round of integration tests
+   - Create container components with mock services
+   - Add integration tests with mock services
 
-2. Week 2
-   - Complete InstructorAvailability integration
-   - Add corresponding integration tests
-   - Implement performance monitoring
+2. Week 2 (Current)
+   - Replace mock services with real API implementations
+   - Update App.tsx to use container components
+   - Test with real backend APIs
 
 3. Week 3
-   - Complete GeneratedSchedule integration
-   - Finish remaining tests
+   - Implement performance monitoring
+   - Add additional tests for edge cases
    - Document all integrations
+   - Prepare for Phase 2
 
 ## Implementation Details
 
@@ -320,6 +498,13 @@ frontend/src/
 ├── hooks/
 │   ├── useErrorHandler.ts
 │   └── useScheduleQuery.ts
+├── test/
+│   ├── fixtures/
+│   │   └── index.ts
+│   ├── handlers/
+│   │   └── schedule.ts
+│   ├── server.ts
+│   └── test-utils.tsx
 └── utils/
     └── error/
         ├── handlers.ts

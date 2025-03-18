@@ -56,81 +56,60 @@
 - [x] Performance monitoring implementation
 - [x] Edge case testing
 
-## Phase 2: Enhanced UI and Manual Adjustments (3 weeks)
+## Phase 2: Enhanced UI and Manual Adjustments (4 weeks)
 
-### 1. Calendar Implementation (5 days)
-- [ ] FullCalendar integration
-- [ ] View customization
-- [ ] Event handling
+### 1. GeneratedSchedule Enhancements (1 week)
+- [ ] Add drag-and-drop support using react-beautiful-dnd
+- [ ] Convert ClassCard to draggable component
+- [ ] Implement drop zones with constraint validation
+- [ ] Add visual feedback during drag operations
+- [ ] Real-time constraint checking
 
-### 2. Drag-and-Drop System (4 days)
-- [ ] DnD setup
-- [ ] Constraint validation
-- [ ] Visual feedback
+### 2. InstructorAvailability Improvements (1 week)
+- [ ] Add multi-period selection
+- [ ] Implement drag-to-select functionality
+- [ ] Add recurring availability patterns
+- [ ] Create pattern preview and editing
+- [ ] Improve period blocking interface
 
-### 3. Teacher Availability (4 days)
-- [ ] Calendar interface
-- [ ] Availability management
-- [ ] Recurrence patterns
+### 3. ClassConflictManager Updates (1 week)
+- [ ] Enhance conflict visualization
+- [ ] Add multi-cell selection
+- [ ] Implement bulk operations
+- [ ] Add pattern-based blocking
+- [ ] Improve constraint feedback
 
-### 4. Constraint Visualization (3 days)
-- [ ] Conflict highlighting
-- [ ] Error messaging
-- [ ] Visual indicators
-
-### 5. Export Formats (3 days)
-- [ ] Multiple format support
-- [ ] Print styling
-- [ ] Data formatting
+### 4. Cross-Component Integration (1 week)
+- [ ] Unify navigation experience
+- [ ] Implement consistent drag-drop behavior
+- [ ] Add keyboard shortcuts
+- [ ] Improve accessibility
+- [ ] Final testing and refinement
 
 ## Current Status
-- Completed Phase 1 steps 1-7
-- Significantly advanced Phase 1, Step 8 (Initial Integration):
-  - Implemented error handling infrastructure
-  - Set up React Query for data fetching
-  - Created container components with mock services
-  - Implemented loading states and error handling
-  - Created integration tests with mock services
-  - Set up MSW for API mocking in tests
-  - Replaced mock services with real API implementations
-  - Updated App.tsx to use container components
-  - Remaining: Test with real backend APIs and add tests for edge cases
-- Implemented Schedule Visualization with three distinct components:
-  - ClassConflictManager: Simple grid for toggling class conflicts
-  - InstructorAvailability: Date-based calendar for teacher scheduling
-  - GeneratedSchedule: Complex calendar for displaying the final schedule
-- Created specialized component architecture with clear separation of concerns
-- Implemented comprehensive test suite for all visualization components
-- Added date-based navigation and week rotation support
-- Implemented conflict highlighting and grade-based filtering
-- Organized components in a logical input-to-output flow layout
+- ✅ Completed Phase 1 with all core functionality:
+  - Error handling infrastructure
+  - React Query integration
+  - Real API implementations
+  - Integration tests with MSW v2
+  - Performance monitoring basics
+- Successfully implemented three core components:
+  - ClassConflictManager: Grid for class conflicts
+  - InstructorAvailability: Teacher scheduling calendar
+  - GeneratedSchedule: Final schedule display
+- Ready to begin Phase 2 enhancements:
+  - Add drag-and-drop functionality
+  - Improve period selection
+  - Enhance visualization
+  - Unify component behavior
 
 ## Notes
-- Frontend work has been simplified to basic React setup
-- Tailwind CSS integrated for styling components
-- OR-Tools integration and Basic Constraint Model completed
-- Comprehensive testing suite implemented with pytest and Vitest
-- CSV Import/Export completed with testing
-- Following step-by-step approach as per implementation plan
-- Detailed UI implementation plan documented in docs/basic-ui-implementation-plan.md
-- Schedule visualization implemented according to revised plan in docs/schedule-visualization-plan-revised.md
-- Error handling infrastructure and React Query integration completed
-- MSW setup for API mocking in tests completed
-- Container components now using real API implementations
-- Successfully migrated from Jest to Vitest for better MSW v2 compatibility
-- Integration tests updated to work with MSW v2
-- Next steps:
-  1. ✅ Migrate testing framework from Jest to Vitest
-  2. ✅ Fix integration tests to work with MSW v2
-  3. ✅ Test with real backend APIs
-  4. ✅ Implement basic performance monitoring
-  5. Before moving to Phase 2:
-     - Add more comprehensive tests for edge cases like network failures
-     - Test with larger datasets to ensure performance
-     - Add more tests for error scenarios with real APIs
-     - Implement more detailed performance metrics
-     - Add more sophisticated load time monitoring
-     - Further optimize caching strategies
-  6. Prepare for Phase 2: Enhanced UI and Manual Adjustments
-- Detailed integration plan and progress tracking in docs/initial-integration-plan.md and docs/component-api-integration-plan.md
-- Migration plan from Jest to Vitest documented in docs/jest-to-vitest-migration-plan.md
+- Pre-Phase 2 tasks (comprehensive tests, advanced monitoring, etc.) have been moved to docs/deferred-tasks.md
+- Phase 2 will enhance existing components rather than introducing new calendar libraries
+- Focus on improving user experience with our current grid-based approach
+- Building on established component patterns
+- Will use react-beautiful-dnd for drag-drop functionality
+- Documentation updated to reflect revised approach:
+  - docs/phase-2-implementation-plan.md: New implementation strategy
+  - docs/deferred-tasks.md: Tasks for future consideration
+  - docs/progress-tracker.md: Updated progress tracking

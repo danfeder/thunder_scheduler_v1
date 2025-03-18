@@ -5,8 +5,8 @@
 ### Frontend
 - React.js with TypeScript
 - TailwindCSS for styling
-- FullCalendar.js for calendar visualization
-- React DnD for drag-and-drop functionality
+- @hello-pangea/dnd for drag-and-drop functionality
+- Custom grid-based calendar components
 
 ### Backend
 - Node.js with Express.js
@@ -23,25 +23,30 @@
 ## System Architecture
 
 ### Frontend Components
-1. Calendar View
-   - Visual schedule representation
-   - Weekly/monthly view toggle
-   - Drag-and-drop interface
-   
-2. Schedule Editor
-   - Manual schedule adjustments
-   - Constraint violation highlighting
-   - Unscheduled classes list
-   
-3. Constraint Manager
-   - Teacher availability calendar
-   - Class conflict management
-   - Custom constraint configuration
-   
-4. Data Import/Export
-   - CSV import interface
-   - Multiple export formats
-   - Printable calendar view
+1. GeneratedSchedule
+   - Complex calendar for final schedule display
+   - Week rotation support
+   - Grade-based filtering
+   - Conflict visualization
+   - Soon: Drag-and-drop class rescheduling
+
+2. InstructorAvailability
+   - Date-based calendar for teacher scheduling
+   - Period-based grid layout
+   - Week navigation
+   - Soon: Multi-period selection and patterns
+
+3. ClassConflictManager
+   - Simple grid for toggling class conflicts
+   - Period-based conflict management
+   - Conflict visualization
+   - Soon: Multi-cell selection and bulk operations
+
+4. Shared Infrastructure
+   - Error handling context
+   - React Query integration
+   - Performance monitoring
+   - Container components with real API implementations
 
 ### Backend Services
 1. Schedule Service
@@ -151,7 +156,8 @@ interface TeacherAvailability {
    - Performance monitoring ✅
    - Real API testing ✅
 
-9. Pre-Phase 2 Preparation (1 week) [IN PROGRESS]
+9. Pre-Phase 2 Preparation [DEFERRED]
+   Note: These tasks have been moved to docs/deferred-tasks.md to focus on core functionality first:
    - Additional edge case testing
    - Performance testing with larger datasets
    - Enhanced error scenario testing
@@ -159,31 +165,36 @@ interface TeacherAvailability {
    - Advanced load time monitoring
    - Caching strategy optimization
 
-### Phase 2: Enhanced UI and Manual Adjustments (3 weeks)
-1. Calendar Implementation (5 days)
-   - FullCalendar integration
-   - View customization
-   - Event handling
+### Phase 2: Enhanced UI and Manual Adjustments (4 weeks)
+1. GeneratedSchedule Enhancements (1 week)
+   - React Beautiful DnD integration
+   - Draggable ClassCard component
+   - Drop zone implementation
+   - Real-time constraint validation
+   - Visual feedback during drag operations
+   - Performance optimization
 
-2. Drag-and-Drop System (4 days)
-   - DnD setup
-   - Constraint validation
-   - Visual feedback
+2. InstructorAvailability Improvements (1 week)
+   - Multi-period selection
+   - Drag-to-select functionality
+   - Recurring availability patterns
+   - Pattern preview and editing
+   - Enhanced period blocking interface
 
-3. Teacher Availability (4 days)
-   - Calendar interface
-   - Availability management
-   - Recurrence patterns
+3. ClassConflictManager Updates (1 week)
+   - Enhanced conflict visualization
+   - Multi-cell selection
+   - Bulk operations support
+   - Pattern-based blocking
+   - Improved constraint feedback
+   - Undo/redo functionality
 
-4. Constraint Visualization (3 days)
-   - Conflict highlighting
-   - Error messaging
-   - Visual indicators
+4. Cross-Component Integration (1 week)
+   - Unified navigation experience
+   - Consistent drag-drop behavior
+   - Final testing and optimization
 
-5. Export Formats (3 days)
-   - Multiple format support
-   - Print styling
-   - Data formatting
+Note: Pre-Phase 2 tasks (comprehensive tests, advanced monitoring, etc.) have been moved to docs/deferred-tasks.md for future consideration. Focus is on delivering core functionality first.
 
 ## Constraint Implementation Strategy
 

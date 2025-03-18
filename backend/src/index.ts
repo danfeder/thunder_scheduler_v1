@@ -2,8 +2,7 @@ import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client';
-import classRoutes from './routes/class.routes';
-import scheduleRoutes from './routes/schedule.routes';
+import apiRoutes from './routes';
 import { errorHandler } from './middleware/error.middleware';
 
 // Initialize environment variables
@@ -29,13 +28,12 @@ app.use((req: Request, _res: Response, next: NextFunction) => {
 });
 
 // API Routes
-app.use('/api/classes', classRoutes);
-app.use('/api/schedules', scheduleRoutes);
+app.use('/api', apiRoutes);
 
-// Health check endpoint
+// Root health check endpoint
 app.get('/health', (_req: Request, res: Response) => {
-  res.json({ 
-    status: 'ok', 
+  res.json({
+    status: 'ok',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV
   });

@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ScheduleProvider } from './context/ScheduleContext';
 import { ErrorProvider } from './context/error/ErrorContext';
 import { QueryProvider } from './context/QueryProvider';
 import ScheduleComponent from './components/schedule';
+import PerformanceMonitor from './components/devtools/PerformanceMonitor';
 import './styles/schedule.css';
 
 function App() {
@@ -10,6 +11,28 @@ function App() {
   const scheduleId = '1';
   const teacherId = 'TEACHER001';
   const defaultClassId = '1';
+  
+  // Track page load performance
+  useEffect(() => {
+    // Record page load time
+    if (window.performance) {
+      const pageLoadTime = performance.now();
+      console.log(`[Performance] Page loaded in ${pageLoadTime.toFixed(2)}ms`);
+      
+      // Report navigation timing metrics
+      if (performance.getEntriesByType) {
+        const navigationTiming = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+        if (navigationTiming) {
+          console.log('[Performance] Navigation Timing:', {
+            domContentLoaded: navigationTiming.domContentLoadedEventEnd - navigationTiming.domContentLoadedEventStart,
+            domComplete: navigationTiming.domComplete,
+            loadEvent: navigationTiming.loadEventEnd - navigationTiming.loadEventStart,
+            totalTime: navigationTiming.loadEventEnd
+          });
+        }
+      }
+    }
+  }, []);
 
   return (
     <ErrorProvider>
@@ -36,6 +59,9 @@ function App() {
                 />
               </div>
             </main>
+            
+            {/* Performance monitoring tools */}
+            <PerformanceMonitor refreshInterval={3000} />
           </div>
         </ScheduleProvider>
       </QueryProvider>

@@ -1,4 +1,4 @@
-# Thunder Scheduler: Initial Integration Phase - Component API Integration
+# Thunder Scheduler: Initial Integration Phase - Real API Testing
 
 ## Project Context
 I'm working on the Thunder Scheduler project, a cooking class scheduler application that helps organize classes for 33 elementary school classes around existing schedule constraints. The project uses a constraint satisfaction approach with Google OR-Tools.
@@ -16,18 +16,20 @@ We've completed several phases of the project:
 - Schedule Visualization with specialized components for different use cases
 - Error handling infrastructure and React Query integration
 - MSW setup for API mocking in tests
-- Container components with mock services for all visualization components
+- Container components with real API implementations for all visualization components
 - Integration tests with mock services for all components
+- Migration from Jest to Vitest for better MSW v2 compatibility
+- Integration tests updated to work with MSW v2
 
 All code is in the GitHub repository: https://github.com/danfeder/thunder_scheduler_v1
 We're currently on the `feature/initial-integration` branch.
 
-## Next Task: Replace Mock Services with Real API Implementations
-According to our updated progress tracker (docs/progress-tracker.md), we've made significant progress on Phase 1, Step 8: Initial Integration. We've implemented container components with mock services for all visualization components and created integration tests that are passing with these mock services. Now we need to:
-- Replace mock services with real API implementations
-- Update App.tsx to use the container components
-- Test with real backend APIs
+## Next Task: Test with Real Backend APIs and Implement Performance Monitoring
+According to our updated progress tracker (docs/progress-tracker.md), we've made significant progress on Phase 1, Step 8: Initial Integration. We've successfully migrated from Jest to Vitest for better MSW v2 compatibility and updated our integration tests. Now we need to:
+- Test the container components with real backend APIs
 - Add tests for edge cases and error scenarios
+- Implement performance monitoring
+- Prepare for Phase 2: Enhanced UI and Manual Adjustments
 
 ## Key Documentation
 Please refer to these files for detailed context:
@@ -35,7 +37,8 @@ Please refer to these files for detailed context:
 - docs/implementation-plan.md: Details the technical approach and architecture
 - docs/progress-tracker.md: Shows what's been completed and what's next
 - docs/initial-integration-plan.md: Detailed plan for the integration phase with progress tracking
-- docs/schedule-visualization-plan-revised.md: Details the visualization components we've implemented
+- docs/component-api-integration-plan.md: Detailed implementation plan for API integration
+- docs/jest-to-vitest-migration-plan.md: Details of the testing framework migration
 - frontend/src/App.tsx: Main React application entry point
 - frontend/src/components/schedule/: Directory containing all schedule visualization components
 - frontend/src/components/schedule/examples/ScheduleExample.tsx: Example component showing proper API integration
@@ -49,25 +52,25 @@ Please refer to these files for detailed context:
 - frontend/src/test/: Testing infrastructure including MSW setup, fixtures, and utilities
 
 ## Technical Requirements
-The Component API Integration implementation needs to handle:
+The Real API Testing implementation needs to handle:
 
-1. API Integration:
-   - Connect frontend components to backend services
-   - Implement proper data fetching and submission
-   - Handle asynchronous operations gracefully
-   - Ensure type safety between frontend and backend
+1. API Integration Testing:
+   - Test container components with real backend APIs
+   - Verify data fetching and submission
+   - Test error handling with real API responses
+   - Validate type safety between frontend and backend
 
-2. Component-Specific Integration:
-   - ClassConflictManager: Connect to conflict management endpoints
-   - InstructorAvailability: Connect to teacher availability API
-   - GeneratedSchedule: Connect to schedule generation and retrieval endpoints
-   - Implement loading states for all components
+2. Performance Monitoring:
+   - Implement performance metrics
+   - Add load time monitoring
+   - Optimize caching strategies
+   - Test with larger datasets
 
-3. Integration Testing:
-   - Leverage MSW setup for API mocking
-   - Test component integration with backend services
-   - Test error scenarios and recovery
-   - Ensure proper data validation
+3. Edge Case Testing:
+   - Test network failures
+   - Test invalid data responses
+   - Test concurrent operations
+   - Test with boundary conditions
 
 ## Current Implementation
 We've successfully implemented:
@@ -75,14 +78,14 @@ We've successfully implemented:
   - ClassConflictManager: Simple grid for toggling class conflicts
   - InstructorAvailability: Date-based calendar for teacher scheduling
   - GeneratedSchedule: Complex calendar for displaying the final schedule
-- Container components for all visualization components:
-  - ClassConflictManagerContainer: With mock service for class data and conflicts
-  - InstructorAvailabilityContainer: With mock service for availability data
-  - GeneratedScheduleContainer: With mock service for schedule, conflicts, and classes
+- Container components for all visualization components with real API implementations:
+  - ClassConflictManagerContainer: Connected to class and conflict endpoints
+  - InstructorAvailabilityContainer: Connected to availability endpoints
+  - GeneratedScheduleContainer: Connected to schedule, conflicts, and classes endpoints
 - Loading states and error handling in all container components
 - Optimistic updates for mutations
 - Comprehensive test suite for all visualization components
-- Integration tests with mock services for all components
+- Integration tests updated to work with MSW v2
 - Logical input-to-output flow layout
 - Grade-based filtering and week rotation support
 - Conflict highlighting and visualization
@@ -103,32 +106,38 @@ We've successfully implemented:
   - Integration tests for all components
 
 ## Specific Tasks
-1. Replace Mock Services with Real API Implementations:
-   - Update scheduleService.ts to include methods for all required API operations
-   - Replace mock services in ClassConflictManagerContainer with real API calls
-   - Replace mock services in InstructorAvailabilityContainer with real API calls
-   - Replace mock services in GeneratedScheduleContainer with real API calls
-   - Ensure proper error handling for real API responses
+1. Test with Real Backend APIs:
+   - Set up a local development environment with backend services running
+   - Create end-to-end tests that connect to the real backend
+   - Test all container components with real API endpoints
+   - Verify data flow between frontend and backend
+   - Test error handling with real API responses
 
-2. Update App.tsx to Use Container Components:
-   - Replace direct component usage with container components
-   - Ensure proper props are passed to containers
-   - Test the application flow with container components
+2. Implement Performance Monitoring:
+   - Add React Query devtools for monitoring cache and queries
+   - Implement performance metrics using the Performance API
+   - Add load time monitoring for critical components
+   - Test with larger datasets to ensure performance
+   - Optimize caching strategies for better performance
 
-3. Test with Real Backend APIs:
-   - Update integration tests to work with real APIs
-   - Add tests for edge cases and error scenarios
-   - Implement performance monitoring
-   - Ensure proper data validation
+3. Add Tests for Edge Cases:
+   - Test network failures and timeouts
+   - Test invalid data responses
+   - Test concurrent operations
+   - Test with boundary conditions
+   - Test error recovery scenarios
+
+4. Prepare for Phase 2:
+   - Document the current implementation
+   - Create a transition plan to Phase 2
+   - Identify any remaining issues or technical debt
+   - Set up the foundation for FullCalendar integration
+   - Plan for drag-and-drop functionality
 
 ## Implementation Approach
 - Continue using the container component pattern we've established:
   - Presentational components focus on UI and user interactions
   - Container components handle data fetching, state management, and error handling
-- Update the scheduleService.ts to include all required API methods:
-  - Methods for fetching and updating class conflicts
-  - Methods for fetching and updating teacher availability
-  - Methods for fetching and updating schedules
 - Use the existing error handling infrastructure:
   - ErrorContext for global error state
   - ScheduleErrorBoundary for component-level error handling
@@ -138,7 +147,10 @@ We've successfully implemented:
   - useUpdateSchedule for modifying schedules
   - useGenerateSchedule for creating new schedules
   - Other specialized hooks for specific operations
-- Update integration tests to work with real APIs
+- Implement performance monitoring:
+  - Use React Query devtools for monitoring cache and queries
+  - Use the Performance API for measuring component performance
+  - Add custom metrics for critical operations
 - Ensure responsive design and accessibility
 
-Please help me replace the mock services with real API implementations in the Thunder Scheduler project, focusing on updating the scheduleService.ts file, connecting the container components to the backend services, and updating the integration tests to work with real APIs.
+Please help me test the container components with real backend APIs, implement performance monitoring, and add tests for edge cases in the Thunder Scheduler project, focusing on ensuring the integration between frontend and backend is robust and performant.

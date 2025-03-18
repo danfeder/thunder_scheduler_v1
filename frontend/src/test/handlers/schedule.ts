@@ -143,6 +143,18 @@ export const scheduleHandlers = [
       success: true
     });
   }),
+  
+  // Handle 404 for non-existent class
+  http.get(`${API_URL}/class/non-existent-id`, () => {
+    return HttpResponse.json(
+      {
+        success: false,
+        message: 'Class not found',
+        error: 'Class not found'
+      },
+      { status: 404 }
+    );
+  }),
 
   http.get(`${API_URL}/class`, () => {
     return HttpResponse.json({

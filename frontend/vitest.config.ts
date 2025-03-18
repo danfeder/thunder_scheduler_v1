@@ -15,12 +15,18 @@ export default defineConfig({
     include: [
       '**/__tests__/**/*.test.tsx',
       '**/test/integration/**/*.test.tsx',
-      '**/test/examples/**/*.test.tsx'
+      '**/test/examples/**/*.test.tsx',
+      '**/test/real-api/**/*.real.test.tsx'
     ],
-    testTimeout: 10000, // Increase timeout to 10 seconds
-    hookTimeout: 10000, // Increase hook timeout to 10 seconds
+    testTimeout: 15000, // Increase timeout for real API tests
+    hookTimeout: 15000, // Increase hook timeout for real API tests
     teardownTimeout: 5000, // Increase teardown timeout
     pool: 'forks', // Use forks for better isolation
+    // Add tags for different test types
+    typecheck: {
+      enabled: true,
+      tsconfig: './tsconfig.json',
+    },
   },
   resolve: {
     alias: {

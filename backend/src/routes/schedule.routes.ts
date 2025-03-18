@@ -172,6 +172,41 @@ const asyncHandler = <P = {}, ResBody = any, ReqBody = any>(
   };
 };
 
+// Get schedule conflicts
+const getScheduleConflicts: AsyncRequestHandler<{ id: string }> = async (req, res) => {
+  try {
+    const conflicts = await scheduleService.getScheduleConflicts(req.params.id);
+    res.json({
+      data: conflicts,
+      success: true
+    });
+  } catch (error: any) {
+    res.status(404).json({
+      error: 'Failed to get schedule conflicts',
+      message: error.message,
+      success: false
+    });
+  }
+};
+
+// Get teacher availability by date
+const getTeacherAvailabilityByDate: AsyncRequestHandler<{ date: string }> = async (req, res) => {
+  try {
+    const date = new Date(req.params.date);
+    const availability = await scheduleService.getTeacherAvailabilityByDate(date);
+    res.json({
+      data: availability,
+      success: true
+    });
+  } catch (error: any) {
+    res.status(404).json({
+      error: 'Failed to get teacher availability',
+      message: error.message,
+      success: false
+    });
+  }
+};
+
 // Register routes
 router.get('/', asyncHandler(getAllSchedules));
 router.get('/:id', asyncHandler<{ id: string }>(getScheduleById));
@@ -181,5 +216,7 @@ router.delete('/:id', asyncHandler<{ id: string }>(deleteSchedule));
 router.put('/:id/assignments', asyncHandler<{ id: string }, any, { assignments: any[] }>(updateScheduleAssignments));
 router.post('/teacher-availability', asyncHandler<{}, any, { date: string; blockedPeriods: number[]; reason?: string }>(createTeacherAvailability));
 router.delete('/teacher-availability/:id', asyncHandler<{ id: string }>(deleteTeacherAvailability));
+router.get('/:id/conflicts', asyncHandler<{ id: string }>(getScheduleConflicts));
+router.get('/teacher-availability/:date', asyncHandler<{ date: string }>(getTeacherAvailabilityByDate));
 
 export default router;

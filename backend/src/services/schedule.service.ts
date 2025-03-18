@@ -277,4 +277,91 @@ export class ScheduleService {
     // Return updated schedule
     return this.getScheduleById(scheduleId);
   }
+
+  /**
+   * Get conflicts for a specific schedule
+   * @param scheduleId Schedule ID
+   * @returns Array of conflicts
+   */
+  async getScheduleConflicts(scheduleId: string): Promise<any[]> {
+    // First check if the schedule exists
+    const schedule = await this.getScheduleById(scheduleId);
+    
+    // Get all assignments for this schedule
+    const assignments = schedule.assignments;
+    
+    // Get all classes with their conflicts
+    const classes = await this.prisma.class.findMany({
+      include: {
+        conflicts: true
+      }
+    });
+    
+    // Convert classes to application types
+    const convertedClasses = classes.map(cls => this._convertPrismaClass(cls));
+    
+    // Get teacher availability for the schedule period
+    const teacherAvailability = await this.getTeacherAvailabilityConverted(
+      schedule.startDate,
+      schedule.endDate
+    );
+    
+    // Use solver service to detect conflicts
+    const validationResult = await this.solverService.validateSchedule(
+      assignments,
+      convertedClasses,
+      teacherAvailability,
+      {
+        maxClassesPerDay: 4,
+        maxClassesPerWeek: 16,
+        maxConsecutiveClasses: 2,
+        requireBreakAfterClass: true
+      }
+    );
+    
+    // Map violations to a simplified conflict format for the frontend
+    return validationResult.violations.map((violation, index) => ({
+      id: `conflict-${index}`,
+      classId: violation.classId || '',
+      day: violation.day || Day.MONDAY,
+      period: violation.period || 0,
+      type: violation.type || 'unknown',
+      message: violation.message || 'Unknown conflict',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      periods: [violation.period || 0]
+    }));
+  }
+
+  /**
+   * Get teacher availability for a specific date
+   * @param date Date to get availability for
+   * @returns Teacher availability for the date
+   */
+  async getTeacherAvailabilityByDate(date: Date): Promise<BaseTeacherAvailability> {
+    // Format date to remove time component for comparison
+    const formattedDate = new Date(date.toISOString().split('T')[0]);
+    
+    // Find availability for the specific date
+    const availability = await this.prisma.teacherAvailability.findFirst({
+      where: {
+        date: {
+          equals: formattedDate
+        }
+      }
+    });
+    
+    // If no availability record exists, return a default one with no blocked periods
+    if (!availability) {
+      return {
+        id: `default-${formattedDate.toISOString().split('T')[0]}`,
+        date: formattedDate,
+        blockedPeriods: [],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+    }
+    
+    return this._convertPrismaTeacherAvailability(availability);
+  }
 }

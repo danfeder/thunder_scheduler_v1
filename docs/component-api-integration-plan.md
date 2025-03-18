@@ -835,56 +835,67 @@ http.get(`${API_URL}/availability/:date`, ({ params }) => {
 
 ### Current Status (March 18, 2025)
 
-We have successfully implemented the container components for all three visualization components:
+We have successfully implemented the container components for all three visualization components with real API implementations:
 
 1. **ClassConflictManager**:
-   - Created ClassConflictManagerContainer component with mock service
+   - Created ClassConflictManagerContainer component with real API service
    - Implemented loading states and error handling
    - Added optimistic updates for mutations
-   - Created integration tests that are passing
+   - Created integration tests that need to be updated for MSW v2
 
 2. **InstructorAvailability**:
-   - Created InstructorAvailabilityContainer component with mock service
+   - Created InstructorAvailabilityContainer component with real API service
    - Implemented date-based queries
    - Added loading states and error handling
-   - Created integration tests that are passing
+   - Created integration tests that need to be updated for MSW v2
 
 3. **GeneratedSchedule**:
-   - Created GeneratedScheduleContainer component with mock service
+   - Created GeneratedScheduleContainer component with real API service
    - Implemented loading states and error handling
-   - Created integration tests that are passing
+   - Created integration tests that need to be updated for MSW v2
 
 ### Testing Infrastructure
 
 - Updated Jest configuration to include integration tests
 - Added cross-fetch polyfill for test environment
-- Fixed MSW handlers to use the correct syntax (rest instead of http)
-- All integration tests are now passing
+- Updated MSW handlers to use the v2 syntax (http instead of rest)
+- Integration tests need to be fixed to work with MSW v2
 
 ### Implementation Approach
 
-Instead of directly connecting to backend APIs, we've implemented mock services within each container component. This approach:
-- Allows for testing without actual backend dependencies
-- Provides a clear interface for future real service implementations
-- Maintains the same component structure and behavior
+We've successfully replaced the mock services with real API implementations in each container component. This approach:
+- Connects directly to backend APIs for real data
+- Maintains proper error handling and loading states
+- Preserves the same component structure and behavior
+- Provides a clean separation between UI components and data fetching logic
 
 ## Next Steps
 
-1. **Replace Mock Services with Real Implementations**:
-   - Update `scheduleService.ts` to include methods for all API operations
-   - Ensure proper type safety between frontend and backend
-   - Implement error handling for API responses
+1. **Migrate Testing Framework**:
+   - Migrate from Jest to Vitest for better MSW v2 compatibility
+   - Update test configuration and setup files
+   - Convert Jest-specific APIs to Vitest equivalents
+   - Ensure all existing tests work with Vitest
 
-2. **Update App.tsx to Use Container Components**:
-   - Replace direct component usage with container components
-   - Ensure proper props are passed to containers
+2. **Fix Integration Tests**:
+   - Update integration tests to work with MSW v2
+   - Add necessary polyfills for the testing environment
+   - Ensure all tests pass with the real API implementations
 
 3. **Additional Testing**:
    - Add tests for edge cases like network failures
    - Test with larger datasets to ensure performance
+   - Add tests for error scenarios with real APIs
 
-4. **Documentation**:
-   - Document the API integration patterns
+4. **Performance Monitoring**:
+   - Implement performance metrics
+   - Add load time monitoring
+   - Optimize caching strategies
+
+5. **Documentation**:
+   - Complete API integration patterns documentation
    - Create examples for other developers
+   - Add performance guidelines
+   - Document testing approach with Vitest and MSW v2
 
-5. **Move on to Phase 2**: Enhanced UI and Manual Adjustments
+6. **Move on to Phase 2**: Enhanced UI and Manual Adjustments

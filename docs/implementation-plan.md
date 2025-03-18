@@ -270,16 +270,19 @@ for day in days:
 - Individual constraint validation
 - Data model validation
 - Service layer functions
+- Component testing with Vitest and React Testing Library
 
 ### Integration Testing
-- API endpoint testing
+- API endpoint testing with MSW v2
 - Database operations
 - OR-Tools integration
+- Component integration testing with mock services
 
 ### End-to-End Testing
 - Schedule generation flows
 - User interface interactions
 - Data import/export
+- API integration testing
 
 ## Development Guidelines
 

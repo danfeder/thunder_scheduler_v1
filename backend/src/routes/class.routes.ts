@@ -1,7 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { prisma } from '../index';
 import { ClassService } from '../services/class.service';
-import { ClassCreate } from '../types';
+import { ClassCreate, Day } from '../types';
 import { AsyncRequestHandler } from '../types/express';
 
 const router = Router();
@@ -75,6 +75,48 @@ const asyncHandler = <P = {}, ResBody = any, ReqBody = any>(
   };
 };
 
+// Update class conflicts
+const updateClassConflicts: AsyncRequestHandler<
+  { id: string },
+  any,
+  { day: string; periods: number[] }[]
+> = async (req, res) => {
+  const { id } = req.params;
+  const conflicts = req.body;
+  
+  if (!conflicts || !Array.isArray(conflicts)) {
+    return res.status(400).json({
+      error: 'Invalid request',
+      message: 'Missing or invalid conflicts data',
+      success: false
+    });
+  }
+  
+  try {
+    // Format conflicts to match the ClassCreate interface
+    const formattedConflicts = conflicts.map(conflict => ({
+      day: conflict.day as Day,
+      periods: conflict.periods
+    }));
+    
+    // Update the class with new conflicts
+    const updatedClass = await classService.updateClass(id, {
+      conflicts: formattedConflicts
+    });
+    
+    res.json({
+      data: updatedClass,
+      success: true
+    });
+  } catch (error: any) {
+    res.status(400).json({
+      error: 'Failed to update class conflicts',
+      message: error.message,
+      success: false
+    });
+  }
+};
+
 // Register routes
 router.get('/', asyncHandler(getAllClasses));
 router.get('/:id', asyncHandler<{ id: string }>(getClassById));
@@ -82,5 +124,6 @@ router.post('/', asyncHandler<{}, any, ClassCreate>(createClass));
 router.put('/:id', asyncHandler<{ id: string }, any, Partial<ClassCreate>>(updateClass));
 router.delete('/:id', asyncHandler<{ id: string }>(deleteClass));
 router.post('/import', asyncHandler<{}, any, ImportRequest>(importClasses));
+router.put('/:id/conflicts', asyncHandler<{ id: string }, any, { day: string; periods: number[] }[]>(updateClassConflicts));
 
 export default router;

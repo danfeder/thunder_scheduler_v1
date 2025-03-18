@@ -59,11 +59,12 @@
 ## Phase 2: Enhanced UI and Manual Adjustments (4 weeks)
 
 ### 1. GeneratedSchedule Enhancements (1 week)
-- [ ] Add drag-and-drop support using react-beautiful-dnd
-- [ ] Convert ClassCard to draggable component
-- [ ] Implement drop zones with constraint validation
-- [ ] Add visual feedback during drag operations
-- [ ] Real-time constraint checking
+- [x] Add drag-and-drop support using @hello-pangea/dnd
+- [x] Convert ClassCard to draggable component
+- [x] Implement drop zones with constraint validation
+- [x] Add visual feedback during drag operations
+- [x] Real-time constraint checking
+- [x] Implement validation state feedback
 
 ### 2. InstructorAvailability Improvements (1 week)
 - [ ] Add multi-period selection
@@ -97,18 +98,18 @@
   - ClassConflictManager: Grid for class conflicts
   - InstructorAvailability: Teacher scheduling calendar
   - GeneratedSchedule: Final schedule display
-- Ready to begin Phase 2 enhancements:
-  - Add drag-and-drop functionality
-  - Improve period selection
-  - Enhance visualization
-  - Unify component behavior
+- Phase 2 progress:
+  - ✅ Completed drag-and-drop functionality for GeneratedSchedule
+  - ✅ Implemented real-time constraint validation
+  - ✅ Added visual feedback for drag operations
+  - Next: Improve InstructorAvailability with multi-period selection
 
 ## Notes
 - Pre-Phase 2 tasks (comprehensive tests, advanced monitoring, etc.) have been moved to docs/deferred-tasks.md
 - Phase 2 will enhance existing components rather than introducing new calendar libraries
 - Focus on improving user experience with our current grid-based approach
 - Building on established component patterns
-- Will use react-beautiful-dnd for drag-drop functionality
+- Using @hello-pangea/dnd for drag-drop functionality
 - Documentation updated to reflect revised approach:
   - docs/phase-2-implementation-plan.md: New implementation strategy
   - docs/deferred-tasks.md: Tasks for future consideration

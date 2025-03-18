@@ -10,40 +10,55 @@ Phase 2 focuses on enhancing our three existing calendar components with drag-an
 
 ## Implementation Approach
 
-### 1. Enhance GeneratedSchedule (1 week)
+### 1. Enhance GeneratedSchedule (1 week) [COMPLETED]
 
-#### 1.1 Add Drag-and-Drop
-- Install react-beautiful-dnd
-- Convert ClassCard to be draggable
-- Make schedule cells droppable
-- Add visual feedback during drag
-- Implement drop validation
+#### 1.1 Add Drag-and-Drop ✅
+- Install @hello-pangea/dnd ✅
+- Convert ClassCard to be draggable ✅
+- Make schedule cells droppable ✅
+- Add visual feedback during drag ✅
+- Implement drop validation ✅
 
 ```typescript
-// Example enhancement to ClassCard
+// Example implementation of DraggableClassCard
+import React from 'react';
+import { Draggable } from '@hello-pangea/dnd';
+import { Conflict } from '../../../types/schedule.types';
+import ClassCard from './ClassCard';
+
 interface DraggableClassCardProps {
   classId: string;
   grade: number;
-  conflicts: Conflict[];
-  isDraggable: boolean;
+  conflicts?: Conflict[];
+  index: number;
+  isDragDisabled?: boolean;
 }
 
 const DraggableClassCard: React.FC<DraggableClassCardProps> = ({
   classId,
   grade,
-  conflicts,
-  isDraggable
+  conflicts = [],
+  index,
+  isDragDisabled = false
 }) => {
   return (
     <Draggable
       draggableId={classId}
-      isDragDisabled={!isDraggable}
+      index={index}
+      isDragDisabled={isDragDisabled}
     >
-      {(provided) => (
+      {(provided, snapshot) => (
         <div
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
+          className={`draggable-class-card ${
+            snapshot.isDragging ? 'dragging' : ''
+          }`}
+          style={{
+            ...provided.draggableProps.style,
+            opacity: snapshot.isDragging ? 0.8 : 1
+          }}
         >
           <ClassCard
             classId={classId}
@@ -55,13 +70,15 @@ const DraggableClassCard: React.FC<DraggableClassCardProps> = ({
     </Draggable>
   );
 };
+
+export default DraggableClassCard;
 ```
 
-#### 1.2 Add Constraint Validation
-- Real-time constraint checking during drag
-- Visual feedback for valid/invalid drops
-- Update conflict highlighting
-- Add tooltips for constraint violations
+#### 1.2 Add Constraint Validation ✅
+- Real-time constraint checking during drag ✅
+- Visual feedback for valid/invalid drops ✅
+- Update conflict highlighting ✅
+- Add validation state feedback ✅
 
 ### 2. Enhance InstructorAvailability (1 week)
 
@@ -142,11 +159,11 @@ interface ConflictImpact {
 
 ## Implementation Timeline
 
-### Week 1: GeneratedSchedule Enhancements
-- [ ] Day 1-2: Implement drag-and-drop
-- [ ] Day 3: Add constraint validation
-- [ ] Day 4: Improve visual feedback
-- [ ] Day 5: Testing and refinement
+### Week 1: GeneratedSchedule Enhancements [COMPLETED]
+- [x] Day 1-2: Implement drag-and-drop
+- [x] Day 3: Add constraint validation
+- [x] Day 4: Improve visual feedback
+- [x] Day 5: Testing and refinement
 
 ### Week 2: InstructorAvailability Improvements
 - [ ] Day 1-2: Add multi-select
@@ -171,7 +188,7 @@ interface ConflictImpact {
 ### Required Packages
 ```json
 {
-  "react-beautiful-dnd": "^13.1.0",
+  "@hello-pangea/dnd": "^13.1.0",
   "@floating-ui/react": "^0.24.0"
 }
 ```
@@ -198,7 +215,7 @@ interface ConflictImpact {
 ## Success Criteria
 
 ### Must Have
-1. Working drag-and-drop in GeneratedSchedule
+1. Working drag-and-drop in GeneratedSchedule ✅
 2. Multi-period selection in InstructorAvailability
 3. Enhanced conflict visualization in ClassConflictManager
 4. Consistent cross-component behavior

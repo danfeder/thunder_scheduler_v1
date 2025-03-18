@@ -28,7 +28,7 @@
    - Week rotation support
    - Grade-based filtering
    - Conflict visualization
-   - Soon: Drag-and-drop class rescheduling
+   - Drag-and-drop class rescheduling ✅
 
 2. InstructorAvailability
    - Date-based calendar for teacher scheduling
@@ -167,12 +167,12 @@ interface TeacherAvailability {
 
 ### Phase 2: Enhanced UI and Manual Adjustments (4 weeks)
 1. GeneratedSchedule Enhancements (1 week)
-   - React Beautiful DnD integration
-   - Draggable ClassCard component
-   - Drop zone implementation
-   - Real-time constraint validation
-   - Visual feedback during drag operations
-   - Performance optimization
+   - React Beautiful DnD integration ✅
+   - Draggable ClassCard component ✅
+   - Drop zone implementation ✅
+   - Real-time constraint validation ✅
+   - Visual feedback during drag operations ✅
+   - Performance optimization ✅
 
 2. InstructorAvailability Improvements (1 week)
    - Multi-period selection

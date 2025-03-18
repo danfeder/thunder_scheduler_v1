@@ -1,4 +1,0 @@
-
-=== Testing with CSV Data ===
-Small CSV file not found: /Users/dan/repos/thunder_scheduler_v1/backend/test_data/small-test-data.csv
-Medium CSV file not found: /Users/dan/repos/thunder_scheduler_v1/backend/test_data/medium-test-data.csv

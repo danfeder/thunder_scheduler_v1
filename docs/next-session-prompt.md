@@ -14,47 +14,55 @@ We've completed several phases of the project:
 - CSV Import/Export functionality with validation
 - Basic UI implementation with core components, state management, and API integration
 - Schedule Visualization with specialized components for different use cases
+- Error handling infrastructure and React Query integration (partial completion of Initial Integration)
 
 All code is in the GitHub repository: https://github.com/danfeder/thunder_scheduler_v1
-We're currently on the `feature/schedule-visualization` branch.
+We're currently on the `feature/initial-integration` branch.
 
-## Next Task: Initial Integration
-According to our progress tracker (docs/progress-tracker.md), we've completed Phase 1, Step 7: Schedule Visualization and are now moving to Phase 1, Step 8: Initial Integration. This involves:
-- API endpoints
-- Error handling
-- Basic testing
+## Next Task: Complete Initial Integration
+According to our progress tracker (docs/progress-tracker.md), we've partially completed Phase 1, Step 8: Initial Integration. We've implemented the error handling infrastructure and React Query setup, but still need to:
+- Connect visualization components to backend APIs
+- Implement component-specific integration tests
+- Set up MSW for API mocking in tests
 
 ## Key Documentation
 Please refer to these files for detailed context:
 - docs/project-brief.md: Contains the full project requirements
 - docs/implementation-plan.md: Details the technical approach and architecture
 - docs/progress-tracker.md: Shows what's been completed and what's next
+- docs/initial-integration-plan.md: Detailed plan for the integration phase with progress tracking
 - docs/schedule-visualization-plan-revised.md: Details the visualization components we've implemented
 - frontend/src/App.tsx: Main React application entry point
 - frontend/src/components/schedule/: Directory containing all schedule visualization components
+- frontend/src/components/schedule/examples/ScheduleExample.tsx: Example component showing proper API integration
 - frontend/src/context/ScheduleContext.tsx: Global state management for schedules
+- frontend/src/context/error/ErrorContext.tsx: Error handling context provider
+- frontend/src/context/QueryProvider.tsx: React Query configuration
+- frontend/src/hooks/useScheduleQuery.ts: Schedule-specific query hooks
+- frontend/src/hooks/useErrorHandler.ts: Error handling hooks
+- frontend/src/utils/error/: Error handling utilities
 - frontend/src/services/scheduleService.ts: Service for schedule-related API operations
 
 ## Technical Requirements
 The Initial Integration implementation needs to handle:
 
 1. API Endpoints:
-   - Connect frontend components to backend services
-   - Implement proper data fetching and submission
-   - Handle asynchronous operations gracefully
-   - Ensure type safety between frontend and backend
+   - Connect frontend components to backend services *(infrastructure in place, need component-specific implementation)*
+   - Implement proper data fetching and submission *(React Query hooks created, need component integration)*
+   - Handle asynchronous operations gracefully *(loading states and error handling needed)*
+   - Ensure type safety between frontend and backend *(type definitions in place)*
 
 2. Error Handling:
-   - Implement comprehensive error handling for API calls
-   - Display user-friendly error messages
-   - Add error boundaries for component failures
-   - Implement retry mechanisms where appropriate
+   - Implement comprehensive error handling for API calls *(✓ completed)*
+   - Display user-friendly error messages *(✓ completed)*
+   - Add error boundaries for component failures *(✓ completed)*
+   - Implement retry mechanisms where appropriate *(✓ completed)*
 
 3. Basic Testing:
-   - Integration tests for API endpoints
-   - End-to-end testing of key workflows
-   - Test error handling and edge cases
-   - Ensure proper data validation
+   - Integration tests for API endpoints *(MSW setup needed)*
+   - End-to-end testing of key workflows *(component integration tests needed)*
+   - Test error scenarios and recovery *(error testing utilities in place)*
+   - Ensure proper data validation *(type validation in place)*
 
 ## Current Implementation
 We've successfully implemented:
@@ -66,32 +74,49 @@ We've successfully implemented:
 - Logical input-to-output flow layout
 - Grade-based filtering and week rotation support
 - Conflict highlighting and visualization
+- Error handling infrastructure:
+  - Error context provider and hooks
+  - Error boundary components
+  - Error types and utilities
+  - Error handling tests
+- React Query integration:
+  - Query client configuration
+  - Schedule-specific query hooks
+  - Mutation hooks with optimistic updates
+  - Type-safe API integration
 
 ## Specific Tasks
 1. Complete API Integration:
    - Connect ClassConflictManager to backend conflict management endpoints
    - Integrate InstructorAvailability with teacher availability API
    - Link GeneratedSchedule with schedule generation and retrieval endpoints
-   - Implement proper loading states and error handling
+   - Implement component-specific loading states
 
-2. Enhance Error Handling:
-   - Create reusable error handling utilities
-   - Implement error boundaries around key components
-   - Add user-friendly error messages and recovery options
-   - Log errors for debugging purposes
+2. Set up Testing Infrastructure:
+   - Install and configure MSW for API mocking
+   - Create handlers for all API endpoints
+   - Set up test fixtures and utilities
+   - Add integration test setup
 
-3. Implement Integration Tests:
-   - Test API integration with frontend components
-   - Verify data flow between components
+3. Implement Component Integration Tests:
+   - Test ClassConflictManager API integration
+   - Test InstructorAvailability API integration
+   - Test GeneratedSchedule API integration
    - Test error scenarios and recovery
-   - Ensure proper state management across the application
 
 ## Implementation Approach
 - Continue using React with TypeScript for type safety
-- Implement proper API service layer
-- Use React Query or similar for data fetching and caching
-- Add comprehensive error handling utilities
-- Implement integration tests with React Testing Library and MSW
+- Use the existing error handling infrastructure:
+  - ErrorContext for global error state
+  - ScheduleErrorBoundary for component-level error handling
+  - useErrorHandler hook for API error handling
+- Leverage React Query hooks from useScheduleQuery.ts:
+  - useSchedule for fetching schedule data
+  - useUpdateSchedule for modifying schedules
+  - useGenerateSchedule for creating new schedules
+  - Other specialized hooks for specific operations
+- Follow the example in ScheduleExample.tsx for proper integration patterns
+- Implement MSW for API mocking in tests
 - Ensure responsive design and accessibility
 
-Please help me implement the Initial Integration functionality for the Thunder Scheduler project, focusing on connecting the visualization components to the backend services and ensuring robust error handling.
+Please help me complete the Initial Integration functionality for the Thunder Scheduler project, focusing on connecting the three main visualization components to the backend services and implementing comprehensive integration tests.

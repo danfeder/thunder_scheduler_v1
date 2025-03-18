@@ -1,8 +1,9 @@
 import React from 'react';
+import { DragDropContext, DropResult } from '@hello-pangea/dnd';
 import { DayOfWeek, Assignment, Conflict } from '../../../types/schedule.types';
 import { format, addDays, startOfWeek } from 'date-fns';
-import ClassCard from './ClassCard';
 import '../../../styles/components/schedule-calendar.css';
+import DroppableCell from './DroppableCell';
 
 interface ScheduleCalendarProps {
   assignments: Assignment[];
@@ -10,6 +11,7 @@ interface ScheduleCalendarProps {
   currentWeek: number;
   selectedGrade?: number;
   classGrades: Record<string, number>;
+  onDragEnd: (result: DropResult) => void;
 }
 
 const DAYS: DayOfWeek[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
@@ -21,6 +23,7 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
   currentWeek,
   selectedGrade,
   classGrades,
+  onDragEnd
 }) => {
   // Calculate dates for the current week
   const weekDates = React.useMemo(() => {
@@ -44,71 +47,52 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
     );
   };
 
-  const getConflictsForAssignment = (assignment: Assignment): Conflict[] => {
+  const getConflictsForCell = (day: DayOfWeek, period: number): Conflict[] => {
     return conflicts.filter(
-      c =>
-        c.classId === assignment.classId &&
-        c.day === assignment.day &&
-        c.period === assignment.period
-    );
-  };
-
-  const hasConflicts = (assignments: Assignment[]): boolean => {
-    return assignments.some(assignment => 
-      getConflictsForAssignment(assignment).length > 0 || assignments.length > 1
+      c => c.day === day && c.period === period
     );
   };
 
   return (
-    <div className="schedule-calendar">
-      {/* Empty cell for top-left corner */}
-      <div />
-      
-      {/* Day headers with dates */}
-      {DAYS.map((day, index) => (
-        <div key={day} className="schedule-header">
-          <div className="date-header">
-            {format(weekDates[index], 'MMM d')}
+    <DragDropContext onDragEnd={onDragEnd}>
+      <div className="schedule-calendar">
+        {/* Empty cell for top-left corner */}
+        <div />
+        
+        {/* Day headers with dates */}
+        {DAYS.map((day, index) => (
+          <div key={day} className="schedule-header">
+            <div className="date-header">
+              {format(weekDates[index], 'MMM d')}
+            </div>
+            <div>{day}</div>
           </div>
-          <div>{day}</div>
-        </div>
-      ))}
+        ))}
 
-      {/* Grid cells */}
-      {PERIODS.map(period => (
-        <React.Fragment key={period}>
-          {/* Period label */}
-          <div className="schedule-period">
-            Period {period}
-          </div>
+        {/* Grid cells */}
+        {PERIODS.map(period => (
+          <React.Fragment key={period}>
+            {/* Period label */}
+            <div className="schedule-period">
+              Period {period}
+            </div>
 
-          {/* Schedule cells */}
-          {DAYS.map(day => {
-            const cellAssignments = getAssignmentsForCell(day, period);
-            const cellHasConflicts = hasConflicts(cellAssignments);
-            
-            return (
-              <div
+            {/* Schedule cells */}
+            {DAYS.map(day => (
+              <DroppableCell
                 key={`${day}-${period}`}
-                className={`schedule-cell ${
-                  cellHasConflicts ? 'has-conflict' : ''
-                }`}
-              >
-                {cellAssignments.map(assignment => (
-                  <div key={assignment.classId} className="schedule-class-card">
-                    <ClassCard
-                      classId={assignment.classId}
-                      grade={classGrades[assignment.classId]}
-                      conflicts={getConflictsForAssignment(assignment)}
-                    />
-                  </div>
-                ))}
-              </div>
-            );
-          })}
-        </React.Fragment>
-      ))}
-    </div>
+                day={day}
+                period={period}
+                assignments={getAssignmentsForCell(day, period)}
+                conflicts={getConflictsForCell(day, period)}
+                classGrades={classGrades}
+                isDropDisabled={false}
+              />
+            ))}
+          </React.Fragment>
+        ))}
+      </div>
+    </DragDropContext>
   );
 };
 

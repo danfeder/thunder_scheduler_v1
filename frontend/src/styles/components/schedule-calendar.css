@@ -41,16 +41,24 @@
 }
 
 /* Drop target styles */
-.schedule-cell.can-drop {
-  @apply bg-blue-50 border-blue-200;
+.schedule-cell.dragging-over {
+  @apply bg-blue-50 border-blue-300 border-2;
+  box-shadow: 0 0 0 2px theme('colors.blue.200');
 }
 
-.schedule-cell.cannot-drop {
-  @apply bg-red-50 border-red-200;
+.schedule-cell.drop-disabled {
+  @apply bg-gray-100 border-gray-300 cursor-not-allowed;
 }
 
-.schedule-cell.is-over {
-  @apply border-2;
+/* Validation state styles */
+.schedule-calendar.validating {
+  @apply opacity-50 pointer-events-none transition-opacity duration-200;
+}
+
+/* Loading overlay */
+.validation-overlay {
+  @apply absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center z-50
+         backdrop-filter backdrop-blur-sm transition-opacity duration-200;
 }
 
 /* Grade level colors */

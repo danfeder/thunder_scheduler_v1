@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { DropResult } from '@hello-pangea/dnd';
 import Card from '../../shared/Card';
 import Button from '../../shared/Button';
 import WeekNavigation from './WeekNavigation';
 import ScheduleCalendar from './ScheduleCalendar';
 import { Schedule, Conflict } from '../../../types/schedule.types';
+
 
 interface GeneratedScheduleProps {
   schedule: Schedule;
@@ -11,10 +13,15 @@ interface GeneratedScheduleProps {
   classGrades: Record<string, number>;
 }
 
-const GeneratedSchedule: React.FC<GeneratedScheduleProps> = ({
+interface GeneratedScheduleWithDragProps extends GeneratedScheduleProps {
+  onDragEnd: (result: DropResult) => void;
+}
+
+const GeneratedSchedule: React.FC<GeneratedScheduleWithDragProps> = ({
   schedule,
   conflicts,
   classGrades,
+  onDragEnd
 }) => {
   const [currentWeek, setCurrentWeek] = useState(1);
   const [selectedGrade, setSelectedGrade] = useState<number | undefined>();
@@ -61,14 +68,17 @@ const GeneratedSchedule: React.FC<GeneratedScheduleProps> = ({
           </div>
         </div>
 
-        <ScheduleCalendar
-          assignments={schedule.assignments}
-          conflicts={conflicts}
-          currentWeek={currentWeek}
-          selectedGrade={selectedGrade}
-          classGrades={classGrades}
-        />
-
+        <div className="relative">
+          <ScheduleCalendar
+            assignments={schedule.assignments}
+            conflicts={conflicts}
+            currentWeek={currentWeek}
+            selectedGrade={selectedGrade}
+            classGrades={classGrades}
+            onDragEnd={onDragEnd}
+          />
+        </div>
+        {/* Conflict display */}
         {conflicts.length > 0 && (
           <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded">
             <h3 className="text-red-800 font-semibold mb-2">
@@ -82,8 +92,7 @@ const GeneratedSchedule: React.FC<GeneratedScheduleProps> = ({
               ))}
             </ul>
           </div>
-        )}
-      </div>
+        )}      </div>
     </Card>
   );
 };

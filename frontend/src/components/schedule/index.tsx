@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import ClassManager from './ClassManager';
-import ClassConflictManager from './ClassConflictManager';
-import InstructorAvailability from './InstructorAvailability';
-import GeneratedSchedule from './GeneratedSchedule';
-import { Schedule, Conflict } from '../../types/schedule.types';
+import ClassConflictManagerContainer from './ClassConflictManager/ClassConflictManagerContainer';
+import InstructorAvailabilityContainer from './InstructorAvailability/InstructorAvailabilityContainer';
+import GeneratedScheduleContainer from './GeneratedSchedule/GeneratedScheduleContainer';
 
 // Import all component-specific styles
 import '../../styles/components/conflict-grid.css';
@@ -11,23 +10,19 @@ import '../../styles/components/availability-calendar.css';
 import '../../styles/components/schedule-calendar.css';
 
 interface ScheduleComponentProps {
-  schedule: Schedule;
-  conflicts: Conflict[];
-  classGrades: Record<string, number>;
-  onClassConflictsChange: (classId: string, conflicts: { day: string; periods: number[] }[]) => void;
-  onInstructorAvailabilityChange: (teacherId: string, blockedPeriods: { date: string; period: number }[]) => void;
+  scheduleId: string;
+  teacherId: string;
+  defaultClassId: string;
 }
 
 const ScheduleComponent: React.FC<ScheduleComponentProps> = ({
-  schedule,
-  conflicts,
-  classGrades,
-  onClassConflictsChange,
-  onInstructorAvailabilityChange,
+  scheduleId,
+  teacherId,
+  defaultClassId
 }) => {
-  const [selectedClassId, setSelectedClassId] = useState<string>();
+  const [selectedClassId, setSelectedClassId] = useState<string>(defaultClassId);
 
-  // Mock data for ClassManager
+  // Mock data for ClassManager - this will be replaced with real API data in the future
   const mockClasses = [
     { id: '1', name: 'Math 101', grade: 5, teacherId: 'TEACHER001' },
     { id: '2', name: 'Science 101', grade: 4, teacherId: 'TEACHER002' },
@@ -48,27 +43,19 @@ const ScheduleComponent: React.FC<ScheduleComponentProps> = ({
       {/* Two-column grid for management tools */}
       <div className="management-grid">
         {/* Class Conflicts - Left column */}
-        <ClassConflictManager
-          classId={selectedClassId || 'MATH101'}
-          onConflictsChange={(conflicts) => 
-            onClassConflictsChange(selectedClassId || 'MATH101', conflicts)
-          }
+        <ClassConflictManagerContainer
+          classId={selectedClassId}
         />
         
         {/* Instructor Availability - Right column */}
-        <InstructorAvailability
-          teacherId="TEACHER001"
-          onAvailabilityChange={(blockedPeriods) => 
-            onInstructorAvailabilityChange('TEACHER001', blockedPeriods)
-          }
+        <InstructorAvailabilityContainer
+          teacherId={teacherId}
         />
       </div>
 
       {/* Generated Schedule - Full width at bottom */}
-      <GeneratedSchedule
-        schedule={schedule}
-        conflicts={conflicts}
-        classGrades={classGrades}
+      <GeneratedScheduleContainer
+        scheduleId={scheduleId}
       />
     </div>
   );
@@ -77,9 +64,9 @@ const ScheduleComponent: React.FC<ScheduleComponentProps> = ({
 export default ScheduleComponent;
 
 // Re-export components for individual use
-export { 
+export {
   ClassManager,
-  ClassConflictManager,
-  InstructorAvailability,
-  GeneratedSchedule
+  ClassConflictManagerContainer,
+  InstructorAvailabilityContainer,
+  GeneratedScheduleContainer
 };

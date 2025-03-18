@@ -2,21 +2,22 @@ import { renderHook } from '@testing-library/react';
 import { useErrorHandler } from '../useErrorHandler';
 import { useError } from '../../context/error/ErrorContext';
 import { ApiError } from '../../utils/error/types';
+import { vi, Mock } from 'vitest';
 
 // Mock the useError hook
-jest.mock('../../context/error/ErrorContext', () => ({
-  useError: jest.fn()
+vi.mock('../../context/error/ErrorContext', () => ({
+  useError: vi.fn()
 }));
 
 describe('useErrorHandler', () => {
-  const mockHandleError = jest.fn();
-  const mockCustomHandler = jest.fn();
+  const mockHandleError = vi.fn();
+  const mockCustomHandler = vi.fn();
 
   beforeEach(() => {
-    (useError as jest.Mock).mockReturnValue({
+    (useError as Mock).mockReturnValue({
       handleError: mockHandleError
     });
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should handle API errors correctly', () => {

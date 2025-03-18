@@ -1,4 +1,4 @@
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { Schedule, Assignment, Conflict } from '../../types/schedule.types';
 import { Class, DailyConflicts, TeacherAvailability } from '../../types/class.types';
 import { mockSchedule, mockClass, mockTeacherAvailability } from '../fixtures';
@@ -8,57 +8,54 @@ const API_URL = 'http://localhost:3000/api';
 
 export const scheduleHandlers = [
   // Schedule endpoints
-  rest.get(`${API_URL}/schedule/:id`, (req, res, ctx) => {
-    const { id } = req.params;
-    return res(ctx.json({
+  http.get(`${API_URL}/schedule/:id`, ({ params }) => {
+    const { id } = params;
+    return HttpResponse.json({
       data: mockSchedule(id as string),
       success: true
-    }));
+    });
   }),
 
-  rest.get(`${API_URL}/schedule`, (req, res, ctx) => {
-    return res(ctx.json({
+  http.get(`${API_URL}/schedule`, () => {
+    return HttpResponse.json({
       data: [mockSchedule('1'), mockSchedule('2')],
       success: true
-    }));
+    });
   }),
 
-  rest.post(`${API_URL}/schedule`, async (req, res, ctx) => {
-    const newSchedule = await req.json() as Omit<Schedule, 'id'>;
-    return res(
-      ctx.status(201),
-      ctx.json({
-        data: {
-          ...newSchedule,
-          id: 'new-schedule-id'
-        },
-        success: true
-      })
-    );
+  http.post(`${API_URL}/schedule`, async ({ request }) => {
+    const newSchedule = await request.json() as Omit<Schedule, 'id'>;
+    return HttpResponse.json({
+      data: {
+        ...newSchedule,
+        id: 'new-schedule-id'
+      },
+      success: true
+    }, { status: 201 });
   }),
 
-  rest.put(`${API_URL}/schedule/:id`, async (req, res, ctx) => {
-    const { id } = req.params;
-    const updates = await req.json() as Partial<Schedule>;
+  http.put(`${API_URL}/schedule/:id`, async ({ params, request }) => {
+    const { id } = params;
+    const updates = await request.json() as Partial<Schedule>;
     const schedule = mockSchedule(id as string);
     
-    return res(ctx.json({
+    return HttpResponse.json({
       data: {
         ...schedule,
         ...updates
       },
       success: true
-    }));
+    });
   }),
 
-  rest.post(`${API_URL}/schedule/generate`, async (req, res, ctx) => {
-    const params = await req.json() as {
+  http.post(`${API_URL}/schedule/generate`, async ({ request }) => {
+    const params = await request.json() as {
       startDate: string;
       endDate: string;
       rotationWeeks: number;
     };
     
-    return res(ctx.json({
+    return HttpResponse.json({
       data: {
         ...mockSchedule('generated'),
         startDate: params.startDate,
@@ -66,12 +63,12 @@ export const scheduleHandlers = [
         rotationWeeks: params.rotationWeeks
       },
       success: true
-    }));
+    });
   }),
 
-  rest.put(`${API_URL}/schedule/:id/assignments`, async (req, res, ctx) => {
-    const { id } = req.params;
-    const assignment = await req.json() as Assignment;
+  http.put(`${API_URL}/schedule/:id/assignments`, async ({ params, request }) => {
+    const { id } = params;
+    const assignment = await request.json() as Assignment;
     const schedule = mockSchedule(id as string);
     
     // Add or update the assignment
@@ -89,42 +86,42 @@ export const scheduleHandlers = [
       updatedAssignments.push(assignment);
     }
     
-    return res(ctx.json({
+    return HttpResponse.json({
       data: {
         ...schedule,
         assignments: updatedAssignments
       },
       success: true
-    }));
+    });
   }),
 
-  rest.post(`${API_URL}/schedule/:id/validate`, async (req, res, ctx) => {
-    const changes = await req.json() as Partial<Schedule>;
+  http.post(`${API_URL}/schedule/:id/validate`, async ({ request }) => {
+    const changes = await request.json() as Partial<Schedule>;
     
     // Mock validation - always valid in tests unless specific test overrides
-    return res(ctx.json({
+    return HttpResponse.json({
       data: {
         valid: true,
         conflicts: []
       },
       success: true
-    }));
+    });
   }),
 
-  rest.post(`${API_URL}/schedule/:id/resolve-conflicts`, (req, res, ctx) => {
-    const { id } = req.params;
+  http.post(`${API_URL}/schedule/:id/resolve-conflicts`, ({ params }) => {
+    const { id } = params;
     const schedule = mockSchedule(id as string);
     
-    return res(ctx.json({
+    return HttpResponse.json({
       data: schedule,
       success: true
-    }));
+    });
   }),
 
   // Get schedule conflicts
-  rest.get(`${API_URL}/schedule/:id/conflicts`, (req, res, ctx) => {
-    const { id } = req.params;
-    return res(ctx.json({
+  http.get(`${API_URL}/schedule/:id/conflicts`, ({ params }) => {
+    const { id } = params;
+    return HttpResponse.json({
       data: [
         {
           classId: '1',
@@ -135,53 +132,53 @@ export const scheduleHandlers = [
         }
       ],
       success: true
-    }));
+    });
   }),
 
   // Class endpoints
-  rest.get(`${API_URL}/class/:id`, (req, res, ctx) => {
-    const { id } = req.params;
-    return res(ctx.json({
+  http.get(`${API_URL}/class/:id`, ({ params }) => {
+    const { id } = params;
+    return HttpResponse.json({
       data: mockClass(id as string),
       success: true
-    }));
+    });
   }),
 
-  rest.get(`${API_URL}/class`, (req, res, ctx) => {
-    return res(ctx.json({
+  http.get(`${API_URL}/class`, () => {
+    return HttpResponse.json({
       data: [mockClass('1'), mockClass('2'), mockClass('3')],
       success: true
-    }));
+    });
   }),
 
-  rest.put(`${API_URL}/class/:id/conflicts`, async (req, res, ctx) => {
-    const { id } = req.params;
-    const conflicts = await req.json() as DailyConflicts[];
+  http.put(`${API_URL}/class/:id/conflicts`, async ({ params, request }) => {
+    const { id } = params;
+    const conflicts = await request.json() as DailyConflicts[];
     
-    return res(ctx.json({
+    return HttpResponse.json({
       data: {
         ...mockClass(id as string),
         conflicts
       },
       success: true
-    }));
+    });
   }),
 
   // Teacher availability endpoints
-  rest.get(`${API_URL}/availability/:date`, (req, res, ctx) => {
-    const { date } = req.params;
-    return res(ctx.json({
+  http.get(`${API_URL}/availability/:date`, ({ params }) => {
+    const { date } = params;
+    return HttpResponse.json({
       data: mockTeacherAvailability(date as string),
       success: true
-    }));
+    });
   }),
 
-  rest.put(`${API_URL}/availability`, async (req, res, ctx) => {
-    const availability = await req.json() as TeacherAvailability;
+  http.put(`${API_URL}/availability`, async ({ request }) => {
+    const availability = await request.json() as TeacherAvailability;
     
-    return res(ctx.json({
+    return HttpResponse.json({
       data: availability,
       success: true
-    }));
+    });
   })
 ];

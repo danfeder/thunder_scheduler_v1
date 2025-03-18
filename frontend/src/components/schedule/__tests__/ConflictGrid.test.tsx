@@ -2,9 +2,10 @@ import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
 import ConflictGrid from '../ClassConflictManager/ConflictGrid';
 import { DayOfWeek } from '../../../types/schedule.types';
+import { vi } from 'vitest';
 
 describe('ConflictGrid', () => {
-  const mockOnConflictToggle = jest.fn();
+  const mockOnConflictToggle = vi.fn();
   const mockConflicts = [
     {
       day: 'Monday' as DayOfWeek,

@@ -26,7 +26,7 @@ const ConflictGrid: React.FC<ConflictGridProps> = ({ conflicts, onConflictToggle
   };
 
   return (
-    <div className="conflict-grid">
+    <div className="conflict-grid" data-testid="conflict-grid">
       {/* Empty cell for top-left corner */}
       <div />
       
@@ -55,6 +55,7 @@ const ConflictGrid: React.FC<ConflictGridProps> = ({ conflicts, onConflictToggle
               }`}
               aria-label={`Toggle conflict for ${day} Period ${period}`}
               aria-pressed={isBlocked(day, period)}
+              data-testid={`conflict-cell-${day}-${period}`}
             />
           ))}
         </React.Fragment>

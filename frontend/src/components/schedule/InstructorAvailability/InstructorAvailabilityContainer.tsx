@@ -5,6 +5,7 @@ import { ScheduleErrorBoundary } from '../../shared/ScheduleErrorBoundary';
 import LoadingSpinner from '../../shared/LoadingSpinner';
 import { TeacherAvailability } from '../../../types/class.types';
 import { useErrorHandler } from '../../../hooks/useErrorHandler';
+import { ScheduleService } from '../../../services/scheduleService';
 
 interface InstructorAvailabilityContainerProps {
   teacherId: string;
@@ -14,24 +15,6 @@ interface BlockedPeriod {
   date: string;
   period: number;
 }
-
-// Mock availability service for now - will be replaced with actual service later
-const AvailabilityService = {
-  getAvailabilityForDates: async (dates: string[]): Promise<TeacherAvailability[]> => {
-    // This is a mock implementation
-    return dates.map(date => ({
-      id: `avail-${date}`,
-      date,
-      blockedPeriods: [1, 5], // Example: Teacher unavailable first and last period
-      reason: 'Mock availability'
-    }));
-  },
-  
-  updateAvailability: async (availability: TeacherAvailability): Promise<TeacherAvailability> => {
-    // This is a mock implementation
-    return availability;
-  }
-};
 
 const InstructorAvailabilityContainer: React.FC<InstructorAvailabilityContainerProps> = ({ teacherId }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -68,13 +51,17 @@ const InstructorAvailabilityContainer: React.FC<InstructorAvailabilityContainerP
   // Fetch availability data for the week
   const { data: availabilityData, isLoading, isError } = useQuery({
     queryKey: ['availability', weekDates.join(',')],
-    queryFn: () => AvailabilityService.getAvailabilityForDates(weekDates),
+    queryFn: async () => {
+      // Fetch availability for each date in the week
+      const promises = weekDates.map(date => ScheduleService.getAvailability(date));
+      return Promise.all(promises);
+    },
     throwOnError: true
   });
 
   // Update availability mutation
   const updateAvailabilityMutation = useMutation({
-    mutationFn: (availability: TeacherAvailability) => AvailabilityService.updateAvailability(availability),
+    mutationFn: (availability: TeacherAvailability) => ScheduleService.updateAvailability(availability),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['availability'] });
     },

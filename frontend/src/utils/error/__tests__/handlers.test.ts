@@ -1,5 +1,6 @@
 import { handleError, handleScheduleError, handleConstraintError, createRetryFunction } from '../handlers';
 import { ApiError } from '../types';
+import { vi } from 'vitest';
 
 describe('Error Handlers', () => {
   describe('handleError', () => {
@@ -44,13 +45,12 @@ describe('Error Handlers', () => {
   });
 
   describe('handleScheduleError', () => {
-    const originalConsoleError = console.error;
     beforeEach(() => {
-      console.error = jest.fn();
+      vi.spyOn(console, 'error').mockImplementation(() => {});
     });
     
     afterEach(() => {
-      console.error = originalConsoleError;
+      vi.restoreAllMocks();
     });
 
     it('should process schedule-specific errors', () => {
@@ -106,7 +106,7 @@ describe('Error Handlers', () => {
 
   describe('createRetryFunction', () => {
     it('should retry failed operations', async () => {
-      const mockFn = jest.fn()
+      const mockFn = vi.fn()
         .mockRejectedValueOnce(new Error('Attempt 1'))
         .mockRejectedValueOnce(new Error('Attempt 2'))
         .mockResolvedValue('success');
@@ -124,7 +124,7 @@ describe('Error Handlers', () => {
         message: 'Schedule not found'
       };
 
-      const mockFn = jest.fn().mockRejectedValue(nonRetryableError);
+      const mockFn = vi.fn().mockRejectedValue(nonRetryableError);
       const retryFn = createRetryFunction(mockFn, 3, 100);
 
       await expect(retryFn()).rejects.toEqual(nonRetryableError);
@@ -133,7 +133,7 @@ describe('Error Handlers', () => {
 
     it('should give up after max retries', async () => {
       const error = new Error('Persistent error');
-      const mockFn = jest.fn().mockRejectedValue(error);
+      const mockFn = vi.fn().mockRejectedValue(error);
 
       const retryFn = createRetryFunction(mockFn, 3, 100);
       await expect(retryFn()).rejects.toEqual({

@@ -2,9 +2,10 @@ import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
 import AvailabilityCalendar from '../InstructorAvailability/AvailabilityCalendar';
 import { format, addDays } from 'date-fns';
+import { vi } from 'vitest';
 
 describe('AvailabilityCalendar', () => {
-  const mockOnAvailabilityChange = jest.fn();
+  const mockOnAvailabilityChange = vi.fn();
   const mockStartDate = new Date('2025-03-17'); // A Monday
   const mockBlockedPeriods = [
     {
@@ -15,7 +16,7 @@ describe('AvailabilityCalendar', () => {
 
   beforeEach(() => {
     mockOnAvailabilityChange.mockClear();
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('renders calendar with correct dates', () => {

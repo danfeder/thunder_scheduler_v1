@@ -2,10 +2,11 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useSchedule, useUpdateSchedule, useGenerateSchedule } from '../../../../hooks/useScheduleQuery';
+import { vi, Mock } from 'vitest';
 import ScheduleExample from '../ScheduleExample';
 
 // Mock the hooks
-jest.mock('../../../../hooks/useScheduleQuery');
+vi.mock('../../../../hooks/useScheduleQuery');
 
 // Create a wrapper with QueryClient
 const createWrapper = () => {
@@ -32,29 +33,29 @@ describe('ScheduleExample', () => {
 
   beforeEach(() => {
     // Reset all mocks
-    jest.clearAllMocks();
+    vi.clearAllMocks();
 
     // Setup default mock implementations
-    (useSchedule as jest.Mock).mockReturnValue({
+    (useSchedule as Mock).mockReturnValue({
       data: null,
       isLoading: false,
       isError: false,
       error: null
     });
 
-    (useUpdateSchedule as jest.Mock).mockReturnValue({
-      mutateAsync: jest.fn(),
+    (useUpdateSchedule as Mock).mockReturnValue({
+      mutateAsync: vi.fn(),
       isPending: false
     });
 
-    (useGenerateSchedule as jest.Mock).mockReturnValue({
-      mutateAsync: jest.fn(),
+    (useGenerateSchedule as Mock).mockReturnValue({
+      mutateAsync: vi.fn(),
       isPending: false
     });
   });
 
   it('shows loading spinner when loading', () => {
-    (useSchedule as jest.Mock).mockReturnValue({
+    (useSchedule as Mock).mockReturnValue({
       isLoading: true
     });
 
@@ -66,7 +67,7 @@ describe('ScheduleExample', () => {
   });
 
   it('displays schedule data when loaded', () => {
-    (useSchedule as jest.Mock).mockReturnValue({
+    (useSchedule as Mock).mockReturnValue({
       data: mockSchedule,
       isLoading: false
     });
@@ -75,17 +76,20 @@ describe('ScheduleExample', () => {
       wrapper: createWrapper()
     });
 
-    expect(screen.getByText(mockSchedule.id)).toBeInTheDocument();
+    // Use a more reliable way to check for the schedule data
+    const preElement = screen.getByText(/Current Schedule/i).nextElementSibling;
+    expect(preElement).toBeInTheDocument();
+    expect(preElement?.textContent).toContain(mockSchedule.id);
   });
 
   it('handles update schedule action', async () => {
-    const mockUpdateMutation = jest.fn();
-    (useUpdateSchedule as jest.Mock).mockReturnValue({
+    const mockUpdateMutation = vi.fn();
+    (useUpdateSchedule as Mock).mockReturnValue({
       mutateAsync: mockUpdateMutation,
       isPending: false
     });
 
-    (useSchedule as jest.Mock).mockReturnValue({
+    (useSchedule as Mock).mockReturnValue({
       data: mockSchedule,
       isLoading: false
     });
@@ -102,8 +106,8 @@ describe('ScheduleExample', () => {
   });
 
   it('handles generate schedule action', async () => {
-    const mockGenerateMutation = jest.fn();
-    (useGenerateSchedule as jest.Mock).mockReturnValue({
+    const mockGenerateMutation = vi.fn();
+    (useGenerateSchedule as Mock).mockReturnValue({
       mutateAsync: mockGenerateMutation,
       isPending: false
     });
@@ -124,8 +128,8 @@ describe('ScheduleExample', () => {
   });
 
   it('shows pending state during mutations', () => {
-    (useUpdateSchedule as jest.Mock).mockReturnValue({
-      mutateAsync: jest.fn(),
+    (useUpdateSchedule as Mock).mockReturnValue({
+      mutateAsync: vi.fn(),
       isPending: true
     });
 
@@ -137,7 +141,7 @@ describe('ScheduleExample', () => {
   });
 
   it('handles errors gracefully', () => {
-    (useSchedule as jest.Mock).mockReturnValue({
+    (useSchedule as Mock).mockReturnValue({
       isError: true,
       error: new Error('Test error')
     });
@@ -151,8 +155,8 @@ describe('ScheduleExample', () => {
   });
 
   it('disables buttons during pending mutations', () => {
-    (useUpdateSchedule as jest.Mock).mockReturnValue({
-      mutateAsync: jest.fn(),
+    (useUpdateSchedule as Mock).mockReturnValue({
+      mutateAsync: vi.fn(),
       isPending: true
     });
 

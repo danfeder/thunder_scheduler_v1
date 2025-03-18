@@ -11,34 +11,6 @@ interface ClassConflictManagerContainerProps {
   classId: string;
 }
 
-// Mock class service for now - will be replaced with actual service later
-const ClassService = {
-  getClass: async (id: string): Promise<Class> => {
-    // This is a mock implementation
-    return {
-      id,
-      name: `Class ${id}`,
-      gradeLevel: 3,
-      conflicts: [
-        {
-          day: 'Monday',
-          periods: [1, 2]
-        }
-      ]
-    };
-  },
-  
-  updateConflicts: async (id: string, conflicts: DailyConflicts[]): Promise<Class> => {
-    // This is a mock implementation
-    return {
-      id,
-      name: `Class ${id}`,
-      gradeLevel: 3,
-      conflicts
-    };
-  }
-};
-
 const ClassConflictManagerContainer: React.FC<ClassConflictManagerContainerProps> = ({ classId }) => {
   const queryClient = useQueryClient();
   const { handleQueryError } = useErrorHandler();
@@ -46,13 +18,13 @@ const ClassConflictManagerContainer: React.FC<ClassConflictManagerContainerProps
   // Fetch class data
   const { data: classData, isLoading, isError } = useQuery({
     queryKey: ['class', classId],
-    queryFn: () => ClassService.getClass(classId),
+    queryFn: () => ScheduleService.getClass(classId),
     throwOnError: true
   });
 
   // Update conflicts mutation
   const updateConflictsMutation = useMutation({
-    mutationFn: (conflicts: DailyConflicts[]) => ClassService.updateConflicts(classId, conflicts),
+    mutationFn: (conflicts: DailyConflicts[]) => ScheduleService.updateClassConflicts(classId, conflicts),
     onMutate: async (newConflicts) => {
       // Cancel any outgoing refetches
       await queryClient.cancelQueries({ queryKey: ['class', classId] });

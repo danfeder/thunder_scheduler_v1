@@ -1,9 +1,21 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { APIResponse } from '../types/class.types';
 
+// Get API URL from environment or use default
+// This approach works in both Vite and Jest environments
+const getApiBaseUrl = (): string => {
+  // Check if we're in a browser environment
+  if (typeof window !== 'undefined' && 'ENV_API_URL' in window) {
+    return (window as any).ENV_API_URL;
+  }
+  
+  // Default API URL for development and testing
+  return 'http://localhost:3000/api';
+};
+
 // Create axios instance with default config
 const axiosInstance: AxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api',
+  baseURL: getApiBaseUrl(),
   headers: {
     'Content-Type': 'application/json',
   },

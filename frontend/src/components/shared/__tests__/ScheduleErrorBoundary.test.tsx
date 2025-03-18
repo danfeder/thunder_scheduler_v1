@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ScheduleErrorBoundary, withScheduleErrorBoundary } from '../ScheduleErrorBoundary';
 import { ApiError } from '../../../utils/error/types';
+import { vi } from 'vitest';
 
 // Test component that can throw errors
 const TestComponent: React.FC<{ throwError?: boolean; apiError?: boolean }> = ({
@@ -21,15 +22,14 @@ const TestComponent: React.FC<{ throwError?: boolean; apiError?: boolean }> = ({
 };
 
 describe('ScheduleErrorBoundary', () => {
-  const originalConsoleError = console.error;
   const originalNodeEnv = process.env.NODE_ENV;
 
   beforeEach(() => {
-    console.error = jest.fn();
+    vi.spyOn(console, 'error').mockImplementation(() => {});
   });
 
   afterEach(() => {
-    console.error = originalConsoleError;
+    vi.restoreAllMocks();
     process.env.NODE_ENV = originalNodeEnv;
   });
 
@@ -66,7 +66,7 @@ describe('ScheduleErrorBoundary', () => {
   });
 
   it('should call onError prop when error occurs', () => {
-    const onError = jest.fn();
+    const onError = vi.fn();
     render(
       <ScheduleErrorBoundary onError={onError}>
         <TestComponent throwError />
@@ -97,7 +97,7 @@ describe('ScheduleErrorBoundary', () => {
   });
 
   it('should handle retry action', () => {
-    const mockReload = jest.fn();
+    const mockReload = vi.fn();
     Object.defineProperty(window, 'location', {
       value: { reload: mockReload },
       writable: true
@@ -153,7 +153,7 @@ describe('ScheduleErrorBoundary', () => {
     });
 
     it('should accept error boundary props', () => {
-      const onError = jest.fn();
+      const onError = vi.fn();
       const WrappedComponent = withScheduleErrorBoundary(TestComponent, {
         onError,
         retryOnError: true

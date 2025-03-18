@@ -2,6 +2,7 @@
 node_modules/
 .pnp/
 .pnp.js
+package-lock.json
 
 # Environment
 .env
@@ -14,6 +15,10 @@ node_modules/
 dist/
 build/
 out/
+frontend/dist/
+.cache/
+public/
+storybook-static/
 
 # Debug
 npm-debug.log*
@@ -21,6 +26,11 @@ yarn-debug.log*
 yarn-error.log*
 
 # Testing
+*.log
+backend/python/test_results/
+__pycache__/
+*.py[cod]
+*$py.class
 coverage/
 
 # IDEs and editors
@@ -32,7 +42,26 @@ coverage/
 
 # Prisma
 .prisma/
+prisma/*.db
+prisma/.env
 
 # Database
 *.db
 *.sqlite
+*.sqlite3
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+.python-version
+venv/
+env/
+
+# OS specific
+Thumbs.db
+ehthumbs.db
+Desktop.ini

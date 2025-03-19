@@ -19,7 +19,9 @@
     "clean": "rm -rf build",
     "prebuild": "npm run clean",
     "prepare-db": "npm run prisma:generate && npm run prisma:migrate",
-    "test-solver": "ts-node src/test-solver.ts"
+    "test-solver": "ts-node src/test-solver.ts",
+    "seed": "ts-node src/scripts/seed.ts",
+    "setup": "npm run prepare-db && npm run seed"
   },
   "keywords": [],
   "author": "",
@@ -33,7 +35,6 @@
     "express": "^4.18.2",
     "fast-csv": "^4.3.6",
     "python-shell": "^5.0.0",
-    "ts-node": "^10.9.1",
     "typescript": "^5.0.4"
   },
   "devDependencies": {
@@ -44,6 +45,7 @@
     "jest": "^29.5.0",
     "prisma": "^5.0.0",
     "ts-jest": "^29.1.0",
+    "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0"
   }
 }

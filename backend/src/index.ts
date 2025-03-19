@@ -1,18 +1,15 @@
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { PrismaClient } from '@prisma/client';
 import apiRoutes from './routes';
 import { errorHandler } from './middleware/error.middleware';
+import prisma from './lib/prisma';
 
 // Initialize environment variables
 dotenv.config();
 
 // Create Express application
 const app = express();
-
-// Initialize Prisma Client
-export const prisma = new PrismaClient();
 
 // Middleware
 app.use(cors({

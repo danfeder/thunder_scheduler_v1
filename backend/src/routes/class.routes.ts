@@ -1,8 +1,8 @@
 import { Router, Request, Response, NextFunction } from 'express';
-import { prisma } from '../index';
 import { ClassService } from '../services/class.service';
 import { ClassCreate, Day } from '../types';
 import { AsyncRequestHandler } from '../types/express';
+import prisma from '../lib/prisma';
 
 const router = Router();
 const classService = new ClassService(prisma);
@@ -13,17 +13,37 @@ interface ImportRequest {
 
 // Get all classes
 const getAllClasses: AsyncRequestHandler = async (_req, res) => {
+  console.log('[DEBUG] Getting all classes');
   const classes = await classService.getAllClasses();
-  res.json(classes);
+  console.log('[DEBUG] Classes retrieved:', classes);
+  const response = {
+    data: classes,
+    success: true
+  };
+  console.log('[DEBUG] Sending response:', response);
+  res.json(response);
 };
 
 // Get a single class by ID
 const getClassById: AsyncRequestHandler<{ id: string }> = async (req, res) => {
+  console.log('[DEBUG] Getting class by ID:', req.params.id);
   const classItem = await classService.getClassById(req.params.id);
+  console.log('[DEBUG] Class retrieved:', classItem);
+  
   if (!classItem) {
-    return res.status(404).json({ error: 'Class not found' });
+    console.log('[DEBUG] Class not found');
+    return res.status(404).json({
+      error: 'Class not found',
+      success: false
+    });
   }
-  res.json(classItem);
+  
+  const response = {
+    data: classItem,
+    success: true
+  };
+  console.log('[DEBUG] Sending response:', response);
+  res.json(response);
 };
 
 // Create a new class

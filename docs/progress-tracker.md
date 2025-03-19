@@ -58,7 +58,7 @@
 
 ## Phase 2: Enhanced UI and Manual Adjustments (4 weeks)
 
-### 1. GeneratedSchedule Enhancements (1 week)
+### 1. GeneratedSchedule Enhancements (1 week) [COMPLETED]
 - [x] Add drag-and-drop support using @hello-pangea/dnd
 - [x] Convert ClassCard to draggable component
 - [x] Implement drop zones with constraint validation
@@ -66,11 +66,12 @@
 - [x] Real-time constraint checking
 - [x] Implement validation state feedback
 
-### 2. InstructorAvailability Improvements (1 week)
-- [ ] Add multi-period selection
-- [ ] Implement drag-to-select functionality
-- [ ] Add recurring availability patterns
-- [ ] Create pattern preview and editing
+### 2. InstructorAvailability Improvements (1 week) [IN PROGRESS]
+- [x] Add multi-period selection with useMultiPeriodSelection hook
+- [x] Implement drag-to-select functionality
+- [x] Add shift+click range selection
+- [x] Add visual feedback during selection
+- [ ] Add keyboard navigation support
 - [ ] Improve period blocking interface
 
 ### 3. ClassConflictManager Updates (1 week)
@@ -101,8 +102,9 @@
 - Phase 2 progress:
   - ✅ Completed drag-and-drop functionality for GeneratedSchedule
   - ✅ Implemented real-time constraint validation
-  - ✅ Added visual feedback for drag operations
-  - Next: Improve InstructorAvailability with multi-period selection
+  - ✅ Added visual feedback for drag operations 
+  - ✅ Implemented multi-period selection in InstructorAvailability
+  - Next: Improve period blocking interface
 
 ## Notes
 - Pre-Phase 2 tasks (comprehensive tests, advanced monitoring, etc.) have been moved to docs/deferred-tasks.md

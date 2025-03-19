@@ -19,98 +19,24 @@ Phase 2 focuses on enhancing our three existing calendar components with drag-an
 - Add visual feedback during drag ✅
 - Implement drop validation ✅
 
-```typescript
-// Example implementation of DraggableClassCard
-import React from 'react';
-import { Draggable } from '@hello-pangea/dnd';
-import { Conflict } from '../../../types/schedule.types';
-import ClassCard from './ClassCard';
-
-interface DraggableClassCardProps {
-  classId: string;
-  grade: number;
-  conflicts?: Conflict[];
-  index: number;
-  isDragDisabled?: boolean;
-}
-
-const DraggableClassCard: React.FC<DraggableClassCardProps> = ({
-  classId,
-  grade,
-  conflicts = [],
-  index,
-  isDragDisabled = false
-}) => {
-  return (
-    <Draggable
-      draggableId={classId}
-      index={index}
-      isDragDisabled={isDragDisabled}
-    >
-      {(provided, snapshot) => (
-        <div
-          ref={provided.innerRef}
-          {...provided.draggableProps}
-          {...provided.dragHandleProps}
-          className={`draggable-class-card ${
-            snapshot.isDragging ? 'dragging' : ''
-          }`}
-          style={{
-            ...provided.draggableProps.style,
-            opacity: snapshot.isDragging ? 0.8 : 1
-          }}
-        >
-          <ClassCard
-            classId={classId}
-            grade={grade}
-            conflicts={conflicts}
-          />
-        </div>
-      )}
-    </Draggable>
-  );
-};
-
-export default DraggableClassCard;
-```
-
 #### 1.2 Add Constraint Validation ✅
 - Real-time constraint checking during drag ✅
 - Visual feedback for valid/invalid drops ✅
 - Update conflict highlighting ✅
 - Add validation state feedback ✅
 
-### 2. Enhance InstructorAvailability (1 week)
+### 2. Enhance InstructorAvailability (1 week) [IN PROGRESS]
 
 #### 2.1 Add Multi-Period Selection
-- Implement drag-to-select multiple periods
-- Add shift+click range selection
-- Improve period blocking UI
-- Add keyboard navigation
+- Implement drag-to-select multiple periods ✅
+- Add shift+click range selection ✅
+- Create reusable selection hook ✅
+- Add visual feedback for selection ✅
+- Improve period blocking interface
 
-```typescript
-// Example enhancement to AvailabilityCalendar
-interface EnhancedAvailabilityCalendarProps {
-  startDate: Date;
-  blockedPeriods: TeacherAvailability[];
-  onAvailabilityChange: (changes: AvailabilityChange[]) => void;
-  allowMultiSelect: boolean;
-  showRecurringOptions: boolean;
-}
-
-interface AvailabilityChange {
-  date: string;
-  period: number;
-  isBlocked: boolean;
-  isRecurring?: boolean;
-}
-```
-
-#### 2.2 Add Recurring Patterns
-- Weekly pattern support
-- Pattern preview
-- Pattern editing
-- Exception handling
+#### 2.2 Interface Improvements
+- Enhanced visual feedback
+- Performance optimization
 
 ### 3. Enhance ClassConflictManager (1 week)
 
@@ -119,23 +45,6 @@ interface AvailabilityChange {
 - Detailed constraint information
 - Conflict impact preview
 - Relationship visualization
-
-```typescript
-// Example enhancement to ConflictGrid
-interface EnhancedConflictGridProps {
-  conflicts: DailyConflicts[];
-  onConflictToggle: (day: DayOfWeek, period: number) => void;
-  showImpact?: boolean;
-  highlightRelated?: boolean;
-  showConstraintDetails?: boolean;
-}
-
-interface ConflictImpact {
-  affectedClasses: string[];
-  severityLevel: 'low' | 'medium' | 'high';
-  resolutionHints: string[];
-}
-```
 
 #### 3.2 Add Bulk Operations
 - Multi-cell selection
@@ -165,11 +74,10 @@ interface ConflictImpact {
 - [x] Day 4: Improve visual feedback
 - [x] Day 5: Testing and refinement
 
-### Week 2: InstructorAvailability Improvements
-- [ ] Day 1-2: Add multi-select
-- [ ] Day 3: Implement recurring patterns
-- [ ] Day 4: Add pattern preview
-- [ ] Day 5: Testing and refinement
+### Week 2: InstructorAvailability Improvements [IN PROGRESS]
+- [x] Day 1-2: Add multi-select with drag and shift+click
+- [x] Day 3: Create reusable selection hook
+- [ ] Day 4: Enhance period blocking interface
 
 ### Week 3: ClassConflictManager Updates
 - [ ] Day 1-2: Enhance conflict visualization
@@ -199,7 +107,7 @@ interface ConflictImpact {
 - Component-specific behavior
 - Drag-drop interactions
 - Constraint validation
-- Pattern handling
+- Selection behavior
 
 ### Integration Tests
 - Cross-component interactions
@@ -216,21 +124,19 @@ interface ConflictImpact {
 
 ### Must Have
 1. Working drag-and-drop in GeneratedSchedule ✅
-2. Multi-period selection in InstructorAvailability
+2. Multi-period selection in InstructorAvailability ✅
 3. Enhanced conflict visualization in ClassConflictManager
 4. Consistent cross-component behavior
 
 ### Should Have
-1. Recurring availability patterns
-2. Bulk operations
-3. Improved navigation
-4. Advanced constraint visualization
+1. Bulk operations
+2. Improved navigation
+3. Advanced constraint visualization
 
 ### Nice to Have
 1. Undo/redo support
-2. Pattern previews
-3. Keyboard shortcuts
-4. Advanced filtering
+2. Advanced filtering
+3. Performance optimizations
 
 ## Next Steps
 

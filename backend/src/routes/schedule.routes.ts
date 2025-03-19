@@ -1,169 +1,104 @@
-import { Router, Request, Response, NextFunction } from 'express';
-import { prisma } from '../index';
+import { Router, Request, Response } from 'express';
 import { ScheduleService } from '../services/schedule.service';
-import { ScheduleGenerationRequest, ScheduleConstraints, BaseAssignment } from '../types';
 import { AsyncRequestHandler } from '../types/express';
+import prisma from '../lib/prisma';
+import { ScheduleGenerationRequest } from '../types';
 
 const router = Router();
 const scheduleService = new ScheduleService(prisma);
 
 // Get all schedules
 const getAllSchedules: AsyncRequestHandler = async (_req, res) => {
+  console.log('[DEBUG] Getting all schedules');
   const schedules = await scheduleService.getAllSchedules();
-  res.json(schedules);
+  console.log('[DEBUG] Schedules retrieved:', schedules);
+  res.json({
+    data: schedules,
+    success: true
+  });
 };
 
-// Get a single schedule by ID
+// Get schedule by ID
 const getScheduleById: AsyncRequestHandler<{ id: string }> = async (req, res) => {
-  const schedule = await scheduleService.getScheduleById(req.params.id);
-  if (!schedule) {
-    return res.status(404).json({ error: 'Schedule not found' });
+  try {
+    console.log('[DEBUG] Getting schedule by ID:', req.params.id);
+    const schedule = await scheduleService.getScheduleById(req.params.id);
+    console.log('[DEBUG] Raw schedule retrieved:', JSON.stringify(schedule, null, 2));
+    
+    if (!schedule) {
+      console.log('[DEBUG] Schedule not found');
+      return res.status(404).json({
+        error: 'Schedule not found',
+        message: 'The requested schedule does not exist',
+        success: false
+      });
+    }
+    
+    const response = {
+      data: schedule,
+      success: true
+    };
+    console.log('[DEBUG] Sending response:', JSON.stringify(response, null, 2));
+    res.json(response);
+  } catch (error) {
+    console.error('[DEBUG] Error in getScheduleById:', error);
+    throw error;
   }
-  res.json(schedule);
 };
 
-// Generate a new schedule
+// Generate schedule
 const generateSchedule: AsyncRequestHandler<{}, any, ScheduleGenerationRequest> = async (req, res) => {
   const request: ScheduleGenerationRequest = req.body;
-  
-  // Validate request
-  if (!request.startDate || !request.endDate || !request.rotationWeeks || !request.constraints) {
-    return res.status(400).json({ 
-      error: 'Invalid request',
-      message: 'Missing required fields'
-    });
-  }
-  
-  // Convert string dates to Date objects
-  request.startDate = new Date(request.startDate);
-  request.endDate = new Date(request.endDate);
-  
-  try {
-    const schedule = await scheduleService.generateSchedule(request);
-    res.status(201).json(schedule);
-  } catch (error: any) {
-    res.status(400).json({ 
-      error: 'Schedule generation failed',
-      message: error.message
-    });
-  }
-};
-
-// Validate a schedule
-const validateSchedule: AsyncRequestHandler<
-  { id: string },
-  any,
-  { constraints: ScheduleConstraints }
-> = async (req, res) => {
-  const { id } = req.params;
-  const { constraints } = req.body;
-  
-  if (!constraints) {
-    return res.status(400).json({ 
-      error: 'Invalid request',
-      message: 'Missing constraints'
-    });
-  }
-  
-  try {
-    const validationResult = await scheduleService.validateSchedule(id, constraints);
-    res.json(validationResult);
-  } catch (error: any) {
-    res.status(400).json({ 
-      error: 'Schedule validation failed',
-      message: error.message
-    });
-  }
-};
-
-// Delete a schedule
-const deleteSchedule: AsyncRequestHandler<{ id: string }> = async (req, res) => {
-  try {
-    const deletedSchedule = await scheduleService.deleteSchedule(req.params.id);
-    res.json(deletedSchedule);
-  } catch (error: any) {
-    res.status(404).json({ 
-      error: 'Schedule not found',
-      message: error.message
-    });
-  }
+  const schedule = await scheduleService.generateSchedule(request);
+  res.json({
+    data: schedule,
+    success: true
+  });
 };
 
 // Update schedule assignments
 const updateScheduleAssignments: AsyncRequestHandler<
-  { id: string },
+  { scheduleId: string },
   any,
-  { assignments: Omit<BaseAssignment, 'id' | 'createdAt' | 'updatedAt' | 'scheduleId'>[] }
+  { assignments: any[] }
 > = async (req, res) => {
-  const { id } = req.params;
+  const { scheduleId } = req.params;
   const { assignments } = req.body;
-  
-  if (!assignments || !Array.isArray(assignments)) {
-    return res.status(400).json({ 
-      error: 'Invalid request',
-      message: 'Missing or invalid assignments'
-    });
-  }
-  
+
   try {
-    const updatedSchedule = await scheduleService.updateScheduleAssignments(id, assignments);
-    res.json(updatedSchedule);
+    const updatedSchedule = await scheduleService.updateScheduleAssignments(scheduleId, assignments);
+    res.json({
+      data: updatedSchedule,
+      success: true
+    });
   } catch (error: any) {
-    res.status(400).json({ 
-      error: 'Schedule update failed',
-      message: error.message
+    res.status(400).json({
+      error: 'Failed to update assignments',
+      message: error.message,
+      success: false
     });
   }
 };
 
-// Create teacher availability
-const createTeacherAvailability: AsyncRequestHandler<
-  {},
-  any,
-  { date: string; blockedPeriods: number[]; reason?: string }
-> = async (req, res) => {
-  const { date, blockedPeriods, reason } = req.body;
-  
-  if (!date || !blockedPeriods) {
-    return res.status(400).json({ 
-      error: 'Invalid request',
-      message: 'Missing required fields'
-    });
-  }
-  
-  try {
-    const availability = await scheduleService.createTeacherAvailability({
-      date: new Date(date),
-      blockedPeriods,
-      reason
-    });
-    res.status(201).json(availability);
-  } catch (error: any) {
-    res.status(400).json({ 
-      error: 'Failed to create teacher availability',
-      message: error.message
-    });
-  }
-};
-
-// Delete teacher availability
-const deleteTeacherAvailability: AsyncRequestHandler<{ id: string }> = async (req, res) => {
-  try {
-    const deletedAvailability = await scheduleService.deleteTeacherAvailability(req.params.id);
-    res.json(deletedAvailability);
-  } catch (error: any) {
-    res.status(404).json({ 
-      error: 'Teacher availability not found',
-      message: error.message
-    });
-  }
+// Validate schedule
+const validateSchedule: AsyncRequestHandler<{ id: string }> = async (req, res) => {
+  const validationResult = await scheduleService.validateSchedule(req.params.id, {
+    maxClassesPerDay: 4,
+    maxClassesPerWeek: 16,
+    maxConsecutiveClasses: 2,
+    requireBreakAfterClass: true
+  });
+  res.json({
+    data: validationResult,
+    success: true
+  });
 };
 
 // Error wrapper for async handlers
 const asyncHandler = <P = {}, ResBody = any, ReqBody = any>(
   handler: AsyncRequestHandler<P, ResBody, ReqBody>
 ) => {
-  return async (req: Request<P, ResBody, ReqBody>, res: Response<ResBody>, next: NextFunction) => {
+  return async (req: Request<P, ResBody, ReqBody>, res: Response<ResBody>, next: any) => {
     try {
       await handler(req, res, next);
     } catch (error) {
@@ -175,33 +110,19 @@ const asyncHandler = <P = {}, ResBody = any, ReqBody = any>(
 // Get schedule conflicts
 const getScheduleConflicts: AsyncRequestHandler<{ id: string }> = async (req, res) => {
   try {
+    console.log('[DEBUG] Getting conflicts for schedule:', req.params.id);
     const conflicts = await scheduleService.getScheduleConflicts(req.params.id);
+    console.log('[DEBUG] Conflicts retrieved:', conflicts);
+    
     res.json({
-      data: conflicts,
+      data: conflicts || [],
       success: true
     });
-  } catch (error: any) {
-    res.status(404).json({
+  } catch (error) {
+    console.error('[DEBUG] Error in getScheduleConflicts:', error);
+    res.status(500).json({
       error: 'Failed to get schedule conflicts',
-      message: error.message,
-      success: false
-    });
-  }
-};
-
-// Get teacher availability by date
-const getTeacherAvailabilityByDate: AsyncRequestHandler<{ date: string }> = async (req, res) => {
-  try {
-    const date = new Date(req.params.date);
-    const availability = await scheduleService.getTeacherAvailabilityByDate(date);
-    res.json({
-      data: availability,
-      success: true
-    });
-  } catch (error: any) {
-    res.status(404).json({
-      error: 'Failed to get teacher availability',
-      message: error.message,
+      message: error instanceof Error ? error.message : 'Unknown error',
       success: false
     });
   }
@@ -210,13 +131,12 @@ const getTeacherAvailabilityByDate: AsyncRequestHandler<{ date: string }> = asyn
 // Register routes
 router.get('/', asyncHandler(getAllSchedules));
 router.get('/:id', asyncHandler<{ id: string }>(getScheduleById));
-router.post('/', asyncHandler<{}, any, ScheduleGenerationRequest>(generateSchedule));
-router.post('/:id/validate', asyncHandler<{ id: string }, any, { constraints: ScheduleConstraints }>(validateSchedule));
-router.delete('/:id', asyncHandler<{ id: string }>(deleteSchedule));
-router.put('/:id/assignments', asyncHandler<{ id: string }, any, { assignments: any[] }>(updateScheduleAssignments));
-router.post('/teacher-availability', asyncHandler<{}, any, { date: string; blockedPeriods: number[]; reason?: string }>(createTeacherAvailability));
-router.delete('/teacher-availability/:id', asyncHandler<{ id: string }>(deleteTeacherAvailability));
+router.post('/generate', asyncHandler<{}, any, ScheduleGenerationRequest>(generateSchedule));
+router.put(
+  '/:scheduleId/assignments',
+  asyncHandler<{ scheduleId: string }, any, { assignments: any[] }>(updateScheduleAssignments)
+);
+router.get('/:id/validate', asyncHandler<{ id: string }>(validateSchedule));
 router.get('/:id/conflicts', asyncHandler<{ id: string }>(getScheduleConflicts));
-router.get('/teacher-availability/:date', asyncHandler<{ date: string }>(getTeacherAvailabilityByDate));
 
 export default router;

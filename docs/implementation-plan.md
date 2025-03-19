@@ -34,7 +34,7 @@
    - Date-based calendar for teacher scheduling
    - Period-based grid layout
    - Week navigation
-   - Soon: Multi-period selection and patterns
+   - Multi-period selection with drag and shift+click support ✅
 
 3. ClassConflictManager
    - Simple grid for toggling class conflicts
@@ -177,9 +177,8 @@ interface TeacherAvailability {
 2. InstructorAvailability Improvements (1 week)
    - Multi-period selection
    - Drag-to-select functionality
-   - Recurring availability patterns
-   - Pattern preview and editing
-   - Enhanced period blocking interface
+   - Multi-period selection with useMultiPeriodSelection hook ✅
+   - Improved period blocking interface
 
 3. ClassConflictManager Updates (1 week)
    - Enhanced conflict visualization

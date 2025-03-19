@@ -319,8 +319,14 @@ export class ScheduleService {
       }
     );
     
+    console.log('[DEBUG] ScheduleService.getScheduleConflicts - Input scheduleId:', scheduleId); // Log input scheduleId
+    console.log('[DEBUG] ScheduleService.getScheduleConflicts - Assignments:', assignments); // Log assignments
+    console.log('[DEBUG] ScheduleService.getScheduleConflicts - Classes:', convertedClasses); // Log classes
+    console.log('[DEBUG] ScheduleService.getScheduleConflicts - Teacher Availability:', teacherAvailability); // Log teacherAvailability
+    console.log('[DEBUG] ScheduleService.getScheduleConflicts - Raw Validation Result:', validationResult); // Log raw validationResult
+
     // Map violations to a simplified conflict format for the frontend
-    return validationResult.violations.map((violation, index) => ({
+    const mappedViolations = validationResult.violations.map((violation, index) => ({
       id: `conflict-${index}`,
       classId: violation.classId || '',
       day: violation.day || Day.MONDAY,
@@ -331,6 +337,9 @@ export class ScheduleService {
       updatedAt: new Date(),
       periods: [violation.period || 0]
     }));
+    console.log('[DEBUG] ScheduleService.getScheduleConflicts - Mapped Violations:', mappedViolations); // Log mappedViolations
+    console.log('[DEBUG] ScheduleService.getScheduleConflicts - Response:', { success: true, data: validationResult.violations }); // Existing debug log
+    return mappedViolations;
   }
 
   /**

@@ -6,7 +6,7 @@ import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ErrorProvider } from '../../../../context/error/ErrorContext';
 import GeneratedSchedule from '..';
-import { Schedule, Assignment, Conflict, DayOfWeek } from '../../../../types/schedule.types';
+import { Schedule, Assignment, Conflict, Day } from '../../../../types/schedule.types';
 
 // Mock the drag and drop context
 vi.mock('@hello-pangea/dnd', () => ({
@@ -22,8 +22,8 @@ vi.mock('@hello-pangea/dnd', () => ({
 
     return (
       <div data-testid="dnd-context" onClick={() => triggerDragEnd(
-        { droppableId: 'Monday-1', index: 0 },
-        { droppableId: 'Tuesday-2', index: 0 }
+        { droppableId: `${Day.MONDAY}-1`, index: 0 },
+        { droppableId: `${Day.TUESDAY}-2`, index: 0 }
       )}>
         {children}
       </div>
@@ -47,7 +47,7 @@ const mockSchedule: Schedule = {
   assignments: [
     {
       classId: 'class-1',
-      day: 'Monday' as DayOfWeek,
+      day: Day.MONDAY,
       period: 1,
       week: 1
     }
@@ -145,7 +145,7 @@ describe('GeneratedSchedule Drag and Drop', () => {
         ...mockSchedule.assignments,
         {
           classId: 'class-2',
-          day: 'Tuesday' as DayOfWeek,
+          day: Day.TUESDAY,
           period: 2,
           week: 1
         }
@@ -154,7 +154,7 @@ describe('GeneratedSchedule Drag and Drop', () => {
 
     const conflicts: Conflict[] = [{
       classId: 'class-2',
-      day: 'Tuesday' as DayOfWeek,
+      day: Day.TUESDAY,
       period: 2,
       type: 'teacher',
       message: 'Teacher schedule conflict'

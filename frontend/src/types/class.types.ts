@@ -1,7 +1,7 @@
-import { DayOfWeek } from './schedule.types';
+import { Day } from './schedule.types';
 
 export interface DailyConflicts {
-  day: DayOfWeek;
+  day: Day;
   periods: number[];
 }
 

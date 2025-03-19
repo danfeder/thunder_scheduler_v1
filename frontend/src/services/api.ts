@@ -10,7 +10,7 @@ const getApiBaseUrl = (): string => {
   }
   
   // Default API URL for development and testing
-  return 'http://localhost:3000/api';
+  return 'http://localhost:4000/api';
 };
 
 // Create axios instance with default config
@@ -33,8 +33,35 @@ axiosInstance.interceptors.response.use(
 
 // Generic API methods
 export async function get<T>(url: string): Promise<APIResponse<T>> {
-  const response: AxiosResponse<APIResponse<T>> = await axiosInstance.get(url);
-  return response.data;
+  console.log(`[DEBUG] API: GET request to ${url}`);
+  try {
+    const response: AxiosResponse<APIResponse<T>> = await axiosInstance.get(url);
+    console.log(`[DEBUG] API: Raw response from ${url}:`, response);
+    console.log(`[DEBUG] API: Response data from ${url}:`, response.data);
+    
+    if (!response.data) {
+      console.error(`[DEBUG] API: No data in response from ${url}`);
+      return { data: {} as T, success: false };
+    }
+    
+    if (!response.data.data) {
+      console.error(`[DEBUG] API: Invalid response format from ${url}:`, response.data);
+      return { data: {} as T, success: false };
+    }
+    
+    return response.data;
+  } catch (error: any) {
+    console.error(`[DEBUG] API: Error in GET request to ${url}:`, error);
+    
+    const errorDetails = {
+      message: error?.message || 'Unknown error',
+      response: error?.response?.data || null,
+      status: error?.response?.status || 500
+    };
+    
+    console.error(`[DEBUG] API: Error details:`, errorDetails);
+    return { data: {} as T, success: false };
+  }
 }
 
 export async function post<T>(url: string, data: unknown): Promise<APIResponse<T>> {

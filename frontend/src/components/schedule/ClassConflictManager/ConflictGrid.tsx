@@ -1,27 +1,30 @@
 import React from 'react';
-import { DayOfWeek } from '../../../types/schedule.types';
+import { Day, convertDay } from '../../../types/schedule.types';
+import { DailyConflicts } from '../../../types/class.types';
 import '../../../styles/components/conflict-grid.css';
-
-interface DailyConflicts {
-  day: DayOfWeek;
-  periods: number[];
-}
 
 interface ConflictGridProps {
   conflicts: DailyConflicts[];
-  onConflictToggle: (day: DayOfWeek, period: number) => void;
+  onConflictToggle: (day: Day, period: number) => void;
 }
 
-const DAYS: DayOfWeek[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+const DAYS: Day[] = [
+  Day.MONDAY,
+  Day.TUESDAY,
+  Day.WEDNESDAY,
+  Day.THURSDAY,
+  Day.FRIDAY
+];
+
 const PERIODS = Array.from({ length: 8 }, (_, i) => i + 1);
 
 const ConflictGrid: React.FC<ConflictGridProps> = ({ conflicts, onConflictToggle }) => {
-  const isBlocked = (day: DayOfWeek, period: number): boolean => {
+  const isBlocked = (day: Day, period: number): boolean => {
     const dayConflicts = conflicts.find(c => c.day === day);
     return dayConflicts ? dayConflicts.periods.includes(period) : false;
   };
 
-  const handleCellClick = (day: DayOfWeek, period: number) => {
+  const handleCellClick = (day: Day, period: number) => {
     onConflictToggle(day, period);
   };
 
@@ -33,7 +36,7 @@ const ConflictGrid: React.FC<ConflictGridProps> = ({ conflicts, onConflictToggle
       {/* Day headers */}
       {DAYS.map(day => (
         <div key={day} className="conflict-header">
-          {day}
+          {convertDay.toString(day)}
         </div>
       ))}
 
@@ -53,7 +56,7 @@ const ConflictGrid: React.FC<ConflictGridProps> = ({ conflicts, onConflictToggle
               className={`conflict-cell ${
                 isBlocked(day, period) ? 'is-blocked' : 'is-available'
               }`}
-              aria-label={`Toggle conflict for ${day} Period ${period}`}
+              aria-label={`Toggle conflict for ${convertDay.toString(day)} Period ${period}`}
               aria-pressed={isBlocked(day, period)}
               data-testid={`conflict-cell-${day}-${period}`}
             />

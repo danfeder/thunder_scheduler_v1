@@ -11,7 +11,7 @@ import { useDragDropSchedule } from '../../../hooks/useDragDropSchedule';
 import { useSchedule } from '../../../hooks/useScheduleQuery';
 
 interface GeneratedScheduleContainerProps {
-  scheduleId: string;
+  scheduleId?: string;
 }
 
 const GeneratedScheduleContainer: React.FC<GeneratedScheduleContainerProps> = ({ scheduleId }) => {
@@ -19,12 +19,19 @@ const GeneratedScheduleContainer: React.FC<GeneratedScheduleContainerProps> = ({
   const [isValidating, setIsValidating] = useState(false);
 
   // Fetch schedule data using the existing hook
-  const { data: schedule, isLoading: isLoadingSchedule, isError: isErrorSchedule } = useSchedule(scheduleId);
+  const { data: schedule, isLoading: isLoadingSchedule, isError: isErrorSchedule } = useSchedule(scheduleId!);
+
+  // Add debug logging
+  React.useEffect(() => {
+    if (schedule) {
+      console.log('[DEBUG] Schedule data received:', schedule);
+    }
+  }, [schedule]);
 
   // Fetch conflicts data
   const { data: conflicts, isLoading: isLoadingConflicts, isError: isErrorConflicts } = useQuery({
     queryKey: ['conflicts', scheduleId],
-    queryFn: () => ScheduleService.getScheduleConflicts(scheduleId),
+    queryFn: () => ScheduleService.getScheduleConflicts(scheduleId!),
     enabled: !!schedule, // Only fetch conflicts if schedule is loaded
     throwOnError: true
   });
@@ -38,7 +45,7 @@ const GeneratedScheduleContainer: React.FC<GeneratedScheduleContainerProps> = ({
 
   // Set up drag-and-drop functionality
   const { handleDragEnd } = useDragDropSchedule({
-    scheduleId,
+    scheduleId: scheduleId!,
     onValidationStart: () => {
       setIsValidating(true);
     },
@@ -58,8 +65,12 @@ const GeneratedScheduleContainer: React.FC<GeneratedScheduleContainerProps> = ({
     return <LoadingSpinner size="large" />;
   }
 
-  if (isError || !schedule || !conflicts || !classes) {
+  if (isError || !schedule || !conflicts || !classes || !schedule.assignments?.length || !classes.length) {
     return <div>Error loading schedule data</div>;
+  }
+
+    if (!scheduleId) {
+    return <div>No schedule selected.</div>;
   }
 
   // Create a map of class IDs to grade levels

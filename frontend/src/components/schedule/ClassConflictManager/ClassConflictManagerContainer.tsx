@@ -21,9 +21,10 @@ const ClassConflictManagerContainer: React.FC<ClassConflictManagerContainerProps
   const { data: classData, isLoading, isError, dataUpdatedAt } = useQuery({
     queryKey: ['class', classId],
     queryFn: () => measureApiCall('getClass', () => ScheduleService.getClass(classId)),
-    throwOnError: true,
+    throwOnError: false, // Don't throw on error to handle it gracefully
     staleTime: 30000, // 30 seconds
-    retry: 2
+    retry: 2,
+    enabled: !!classId // Only run the query if classId is provided
   });
 
   // Log performance metrics when data is loaded
@@ -85,8 +86,12 @@ const ClassConflictManagerContainer: React.FC<ClassConflictManagerContainerProps
     return <LoadingSpinner size="large" />;
   }
 
-  if (isError || !classData) {
-    return <div>Error loading class data</div>;
+  if (isError) {
+    return <div>Error loading class data. Please try again later.</div>;
+  }
+  
+  if (!classData) {
+    return <div>No class data found. Please select a different class.</div>;
   }
 
   return (

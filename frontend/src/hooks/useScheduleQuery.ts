@@ -1,12 +1,13 @@
-import { 
-  useQuery, 
-  useMutation, 
+import {
+  useQuery,
+  useMutation,
   useQueryClient,
   UseQueryResult,
   UseMutationResult,
   UseQueryOptions
 } from '@tanstack/react-query';
 import { ScheduleService } from '../services/scheduleService';
+import { get } from '../services/api';
 import { useErrorHandler } from './useErrorHandler';
 import { Schedule, Assignment } from '../types/schedule.types';
 import { ApiError } from '../utils/error/types';
@@ -52,9 +53,31 @@ export const useSchedule = (
 
   return useQuery<Schedule, ApiError, Schedule, ScheduleKey>({
     queryKey: scheduleKeys.detail(scheduleId),
-    queryFn: () => ScheduleService.getSchedule(scheduleId),
+    queryFn: async () => {
+      console.log('[DEBUG] useSchedule: Fetching schedule by ID:', scheduleId);
+      try {
+        const response = await ScheduleService.getSchedule(scheduleId);
+        console.log('[DEBUG] useSchedule: Raw response:', response);
+        
+        if (!response) {
+          console.error('[DEBUG] useSchedule: No response received');
+          return {} as Schedule;
+        }
+        
+        if (!response.id) {
+          console.error('[DEBUG] useSchedule: Invalid schedule format:', response);
+          return {} as Schedule;
+        }
+        
+        return response;
+      } catch (error) {
+        console.error('[DEBUG] useSchedule: Error fetching schedule:', error);
+        return {} as Schedule;
+      }
+    },
+    retry: 1,
     ...options,
-    throwOnError: true
+    throwOnError: false
   });
 };
 
@@ -68,7 +91,42 @@ export const useAllSchedules = (
 
   return useQuery<Schedule[], ApiError, Schedule[], ScheduleKey>({
     queryKey: scheduleKeys.lists(),
-    queryFn: () => ScheduleService.getAllSchedules(),
+    queryFn: async () => {
+      console.log('[DEBUG] useAllSchedules: Fetching schedules...');
+      try {
+        const response = await ScheduleService.getAllSchedules();
+        console.log('[DEBUG] useAllSchedules: Response:', response);
+        
+        // Check if response is valid
+        if (!response) {
+          console.error('[DEBUG] useAllSchedules: No response received');
+          throw new Error('No schedules data received');
+        }
+        
+        // Log the response structure to help debug
+        console.log('[DEBUG] useAllSchedules: Response type:', typeof response);
+        console.log('[DEBUG] useAllSchedules: Response keys:', Object.keys(response));
+        console.log('[DEBUG] useAllSchedules: Is array?', Array.isArray(response));
+        
+        // If response is empty array, return it
+        if (Array.isArray(response) && response.length === 0) {
+          console.log('[DEBUG] useAllSchedules: Empty array received');
+          return [];
+        }
+        
+        // If response is not an array, throw error
+        if (!Array.isArray(response)) {
+          console.error('[DEBUG] useAllSchedules: Response is not an array:', response);
+          throw new Error('Invalid response format: expected array of schedules');
+        }
+        
+        return response;
+      } catch (error) {
+        console.error('[DEBUG] useAllSchedules: Error fetching schedules:', error);
+        throw error;
+      }
+    },
+    retry: 1,
     ...options,
     throwOnError: true
   });
@@ -125,7 +183,7 @@ export const useUpdateAssignment = (
   return useMutation<Schedule, ApiError, Assignment>({
     mutationFn: async assignment => {
       const response = await ScheduleService.updateAssignment(scheduleId, assignment);
-      return response.data;
+      return response;
     },
     onSuccess: schedule => {
       queryClient.setQueryData(scheduleKeys.detail(scheduleId), schedule);
@@ -145,7 +203,7 @@ export const useValidateChanges = (
   return useMutation<ValidationResponse, ApiError, Partial<Schedule>>({
     mutationFn: async changes => {
       const response = await ScheduleService.validateChanges(scheduleId, changes);
-      return response.data;
+      return response;
     },
     onError: (error) => handleQueryError(error)
   });
@@ -163,7 +221,7 @@ export const useResolveConflicts = (
   return useMutation<Schedule, ApiError, void>({
     mutationFn: async () => {
       const response = await ScheduleService.resolveConflicts(scheduleId);
-      return response.data;
+      return response;
     },
     onSuccess: schedule => {
       queryClient.setQueryData(scheduleKeys.detail(scheduleId), schedule);

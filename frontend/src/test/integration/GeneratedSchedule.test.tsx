@@ -6,6 +6,7 @@ import { server } from '../server';
 import { vi } from 'vitest';
 import GeneratedScheduleWithErrorBoundary from '../../components/schedule/GeneratedSchedule/GeneratedScheduleContainer';
 import { mockSchedule, mockClass } from '../fixtures';
+import { Day } from '../../types/schedule.types';
 
 describe('GeneratedSchedule Integration', () => {
   beforeEach(() => {
@@ -29,7 +30,7 @@ describe('GeneratedSchedule Integration', () => {
           data: [
             {
               classId: 'class1',
-              day: 'Monday',
+              day: Day.MONDAY,
               period: 3,
               type: 'class',
               message: 'Conflict with another class'
@@ -51,8 +52,7 @@ describe('GeneratedSchedule Integration', () => {
     vi.useRealTimers();
   });
 
-  // Skip this test for now as it's timing out
-  it.skip('loads and displays schedule data', async () => {
+  it('loads and displays schedule with period grid', async () => {
     render(<GeneratedScheduleWithErrorBoundary scheduleId="schedule1" />);
 
     // Wait for loading to complete
@@ -60,32 +60,39 @@ describe('GeneratedSchedule Integration', () => {
       expect(screen.queryByText(/loading/i)).not.toBeInTheDocument();
     });
 
-    // Check that the component displays the schedule
-    expect(screen.getByText(/Generated Schedule/i)).toBeInTheDocument();
+    // Check for schedule grid structure
+    const scheduleGrid = screen.getByTestId('conflict-grid');
+    expect(scheduleGrid).toBeInTheDocument();
+
+    // Check for period labels (1-8)
+    for (let i = 1; i <= 8; i++) {
+      expect(screen.getByText(`Period ${i}`)).toBeInTheDocument();
+    }
+
+    // Check for day headers
+    expect(screen.getByText('Monday')).toBeInTheDocument();
+    expect(screen.getByText('Tuesday')).toBeInTheDocument();
+    expect(screen.getByText('Wednesday')).toBeInTheDocument();
+    expect(screen.getByText('Thursday')).toBeInTheDocument();
+    expect(screen.getByText('Friday')).toBeInTheDocument();
   });
 
-  // Skip this test for now as it's timing out
-  it.skip('displays class assignments correctly', async () => {
-    const { container } = render(<GeneratedScheduleWithErrorBoundary scheduleId="schedule1" />);
+  it('displays class assignments and conflicts correctly', async () => {
+    render(<GeneratedScheduleWithErrorBoundary scheduleId="schedule1" />);
 
-    // Wait for loading to complete with a longer timeout
+    // Wait for loading to complete
     await waitFor(() => {
       expect(screen.queryByText(/loading/i)).not.toBeInTheDocument();
-    }, { timeout: 2000 });
+    });
 
-    // Use a more flexible approach to check for class assignments
-    // Instead of looking for specific text, check for elements that would be present
-    // in a successful render
-    const scheduleContainer = container.querySelector('.schedule-calendar') ||
-                             container.querySelector('.generated-schedule') ||
-                             container.querySelector('[role="grid"]');
-    
-    expect(scheduleContainer).not.toBeNull();
-    
-    // Look for any class name or class-related content
-    const hasClassContent = screen.queryByText(/class/i) !== null ||
-                           container.textContent?.includes('class');
-    
-    expect(hasClassContent).toBe(true);
+    // Check for assignments from mock data
+    await waitFor(() => {
+      // Since we know we have a class1 with a conflict on Monday period 3
+      const cell = screen.getByTestId(`conflict-cell-${Day.MONDAY}-3`);
+      expect(cell).toHaveClass('is-blocked');
+    });
+
+    // Verify the conflict message is displayed
+    expect(screen.getByText(/Conflict with another class/i)).toBeInTheDocument();
   });
 });

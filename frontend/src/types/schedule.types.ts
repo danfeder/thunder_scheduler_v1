@@ -1,14 +1,20 @@
+export enum Day {
+  MONDAY = 'MONDAY',
+  TUESDAY = 'TUESDAY',
+  WEDNESDAY = 'WEDNESDAY',
+  THURSDAY = 'THURSDAY',
+  FRIDAY = 'FRIDAY'
+}
+
 export type DayOfWeek = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday';
 
 export interface Period {
   id: number;
-  startTime: string;
-  endTime: string;
 }
 
 export interface Assignment {
   classId: string;
-  day: DayOfWeek;
+  day: Day;
   period: number;
   week: number;
 }
@@ -31,8 +37,32 @@ export interface ScheduleState {
 
 export interface Conflict {
   classId: string;
-  day: DayOfWeek;
+  day: Day;
   period: number;
   type: 'teacher' | 'class' | 'time';
   message: string;
 }
+
+// Helper function to convert between Day enum and DayOfWeek string
+export const convertDay = {
+  toEnum: (day: DayOfWeek): Day => {
+    const map: Record<DayOfWeek, Day> = {
+      'Monday': Day.MONDAY,
+      'Tuesday': Day.TUESDAY,
+      'Wednesday': Day.WEDNESDAY,
+      'Thursday': Day.THURSDAY,
+      'Friday': Day.FRIDAY
+    };
+    return map[day];
+  },
+  toString: (day: Day): DayOfWeek => {
+    const map: Record<Day, DayOfWeek> = {
+      [Day.MONDAY]: 'Monday',
+      [Day.TUESDAY]: 'Tuesday',
+      [Day.WEDNESDAY]: 'Wednesday',
+      [Day.THURSDAY]: 'Thursday',
+      [Day.FRIDAY]: 'Friday'
+    };
+    return map[day];
+  }
+};

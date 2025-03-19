@@ -1,10 +1,10 @@
 import React from 'react';
 import { Droppable } from '@hello-pangea/dnd';
-import { Assignment, Conflict } from '../../../types/schedule.types';
+import { Assignment, Conflict, Day } from '../../../types/schedule.types';
 import DraggableClassCard from './DraggableClassCard';
 
 interface DroppableCellProps {
-  day: string;
+  day: Day;
   period: number;
   assignments: Assignment[];
   conflicts?: Conflict[];

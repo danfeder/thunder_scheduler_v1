@@ -54,7 +54,12 @@ const InstructorAvailabilityContainer: React.FC<InstructorAvailabilityContainerP
     queryFn: async () => {
       // Fetch availability for each date in the week
       const promises = weekDates.map(date => ScheduleService.getAvailability(date));
-      return Promise.all(promises);
+      const results = await Promise.all(promises);
+      // Return empty array if no blocked periods
+      return results.map(result => ({
+        ...result,
+        blockedPeriods: result?.blockedPeriods || []
+      }));
     },
     throwOnError: true
   });
@@ -104,12 +109,13 @@ const InstructorAvailabilityContainer: React.FC<InstructorAvailabilityContainerP
   }
 
   // Convert availability data to the format expected by InstructorAvailability
-  const blockedPeriods = availabilityData.flatMap((availability: TeacherAvailability) =>
-    availability.blockedPeriods.map(period => ({
+  const blockedPeriods = availabilityData.flatMap((availability: TeacherAvailability) => {
+    if (!availability || !availability.blockedPeriods) return [];
+    return availability.blockedPeriods.map(period => ({
       date: availability.date,
       period
-    }))
-  );
+    }));
+  });
 
   return (
     <InstructorAvailability

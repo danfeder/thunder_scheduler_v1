@@ -5,8 +5,19 @@ import { http, HttpResponse } from 'msw';
 import { server } from '../server';
 import ClassConflictManagerWithErrorBoundary from '../../components/schedule/ClassConflictManager/ClassConflictManagerContainer';
 import { mockClass } from '../fixtures';
+import { Day } from '../../types/schedule.types';
 
 describe('ClassConflictManager Integration', () => {
+  const mockClassWithConflicts = {
+    ...mockClass('123'),
+    conflicts: [
+      {
+        day: Day.MONDAY,
+        periods: [1, 2],
+      }
+    ]
+  };
+
   // Setup MSW handlers before each test
   beforeEach(() => {
     // Reset handlers
@@ -16,7 +27,7 @@ describe('ClassConflictManager Integration', () => {
     server.use(
       http.get('http://localhost:3000/api/class/123', () => {
         return HttpResponse.json({
-          data: mockClass('123'),
+          data: mockClassWithConflicts,
           success: true
         });
       }),
@@ -24,7 +35,7 @@ describe('ClassConflictManager Integration', () => {
         const conflicts = await request.json();
         return HttpResponse.json({
           data: {
-            ...mockClass('123'),
+            ...mockClassWithConflicts,
             conflicts
           },
           success: true
@@ -54,6 +65,12 @@ describe('ClassConflictManager Integration', () => {
       const gridElement = document.querySelector('.conflict-grid') ||
                          document.querySelector('[data-testid="conflict-grid"]');
       expect(gridElement).not.toBeNull();
+      
+      // Check that Monday conflicts are displayed correctly
+      const mondayPeriod1 = screen.getByLabelText('Toggle conflict for Monday Period 1');
+      const mondayPeriod2 = screen.getByLabelText('Toggle conflict for Monday Period 2');
+      expect(mondayPeriod1).toHaveClass('is-blocked');
+      expect(mondayPeriod2).toHaveClass('is-blocked');
     }
   });
 
@@ -70,26 +87,6 @@ describe('ClassConflictManager Integration', () => {
   });
 
   it('updates conflicts when toggled', async () => {
-    // Setup the mock handlers explicitly for this test
-    server.use(
-      http.get('http://localhost:3000/api/class/123', () => {
-        return HttpResponse.json({
-          data: mockClass('123'),
-          success: true
-        });
-      }),
-      http.put('http://localhost:3000/api/class/123/conflicts', async ({ request }) => {
-        const conflicts = await request.json();
-        return HttpResponse.json({
-          data: {
-            ...mockClass('123'),
-            conflicts
-          },
-          success: true
-        });
-      })
-    );
-
     render(<ClassConflictManagerWithErrorBoundary classId="123" />);
 
     // Wait for loading to complete
@@ -97,9 +94,17 @@ describe('ClassConflictManager Integration', () => {
       expect(screen.queryByText(/loading/i)).not.toBeInTheDocument();
     });
 
-    // We expect the error boundary to be shown due to the data issue in the test environment
-    // This is acceptable for now as we're just testing the integration with MSW
-    const errorBoundary = document.querySelector('.schedule-error-boundary');
-    expect(errorBoundary).not.toBeNull();
+    // Find and click a non-conflicted cell (Tuesday Period 1)
+    const tuesdayPeriod1 = screen.getByLabelText('Toggle conflict for Tuesday Period 1');
+    await waitFor(() => {
+      expect(tuesdayPeriod1).toBeInTheDocument();
+    });
+
+    fireEvent.click(tuesdayPeriod1);
+
+    // Verify the cell was updated
+    await waitFor(() => {
+      expect(tuesdayPeriod1).toHaveClass('is-blocked');
+    });
   });
 });

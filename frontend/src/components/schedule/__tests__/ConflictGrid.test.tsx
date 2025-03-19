@@ -1,14 +1,14 @@
 import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
 import ConflictGrid from '../ClassConflictManager/ConflictGrid';
-import { DayOfWeek } from '../../../types/schedule.types';
+import { Day, convertDay } from '../../../types/schedule.types';
 import { vi } from 'vitest';
 
 describe('ConflictGrid', () => {
   const mockOnConflictToggle = vi.fn();
   const mockConflicts = [
     {
-      day: 'Monday' as DayOfWeek,
+      day: Day.MONDAY,
       periods: [1, 2],
     },
   ];
@@ -58,7 +58,7 @@ describe('ConflictGrid', () => {
     const tuesdayPeriod1 = screen.getByLabelText('Toggle conflict for Tuesday Period 1');
     fireEvent.click(tuesdayPeriod1);
 
-    expect(mockOnConflictToggle).toHaveBeenCalledWith('Tuesday', 1);
+    expect(mockOnConflictToggle).toHaveBeenCalledWith(Day.TUESDAY, 1);
   });
 
   it('handles toggling existing conflicts', () => {
@@ -73,7 +73,7 @@ describe('ConflictGrid', () => {
     const mondayPeriod1 = screen.getByLabelText('Toggle conflict for Monday Period 1');
     fireEvent.click(mondayPeriod1);
 
-    expect(mockOnConflictToggle).toHaveBeenCalledWith('Monday', 1);
+    expect(mockOnConflictToggle).toHaveBeenCalledWith(Day.MONDAY, 1);
   });
 
   it('maintains grid layout with correct headers', () => {
@@ -85,9 +85,15 @@ describe('ConflictGrid', () => {
     );
 
     // Check day headers
-    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+    const days = [
+      Day.MONDAY,
+      Day.TUESDAY,
+      Day.WEDNESDAY,
+      Day.THURSDAY,
+      Day.FRIDAY
+    ];
     days.forEach(day => {
-      expect(screen.getByText(day)).toBeInTheDocument();
+      expect(screen.getByText(convertDay.toString(day))).toBeInTheDocument();
     });
 
     // Check period labels

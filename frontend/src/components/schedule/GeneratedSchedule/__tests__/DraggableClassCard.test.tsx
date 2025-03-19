@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, within } from '@testing-library/react';
 import { vi } from 'vitest';
 import { DragDropContext, Droppable } from '@hello-pangea/dnd';
-import { Conflict, DayOfWeek } from '../../../../types/schedule.types';
+import { Conflict, Day } from '../../../../types/schedule.types';
 import DraggableClassCard from '../DraggableClassCard';
 
 // Helper function to simulate a drag operation
@@ -45,7 +45,7 @@ describe('DraggableClassCard', () => {
         type: 'teacher' as const,
         message: 'Teacher unavailable',
         classId: 'MATH101',
-        day: 'Monday' as DayOfWeek,
+        day: Day.MONDAY,
         period: 1
       }
     ]

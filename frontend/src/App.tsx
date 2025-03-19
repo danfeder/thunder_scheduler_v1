@@ -1,25 +1,92 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { ScheduleProvider } from './context/ScheduleContext';
+import { useAllSchedules } from './hooks/useScheduleQuery';
+import { useAllClasses } from './hooks/useClassQuery';
 import { ErrorProvider } from './context/error/ErrorContext';
 import { QueryProvider } from './context/QueryProvider';
 import ScheduleComponent from './components/schedule';
 import PerformanceMonitor from './components/devtools/PerformanceMonitor';
+import LoadingSpinner from './components/shared/LoadingSpinner';
 import './styles/schedule.css';
 
-function App() {
-  // Default schedule ID - in a real app, this might come from a route parameter
-  const scheduleId = '1';
+function ScheduleContent() {
   const teacherId = 'TEACHER001';
-  const defaultClassId = '1';
   
+  // Fetch available schedules and classes using the proper hooks
+  const { data: schedules, isLoading: schedulesLoading, isError: schedulesError } = useAllSchedules();
+  const { data: classes, isLoading: classesLoading, isError: classesError } = useAllClasses();
+  
+ const isLoading = schedulesLoading || classesLoading;
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner size="large" />
+      </div>
+    );
+  }
+
+  if (schedulesError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-red-600">
+          Error loading schedules
+        </div>
+      </div>
+    )
+  }
+
+  if (classesError || !classes) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-red-600">
+          Error loading classes
+        </div>
+      </div>
+    )
+  }
+
+
+  // Use the first available schedule and class, or undefined if no schedules
+  const scheduleId = schedules && schedules.length > 0 ? schedules[0].id : undefined;
+  const defaultClassId = classes && classes.length > 0 ? classes[0].id : '';
+
+  return (
+    <div className="min-h-screen bg-gray-100">
+      {/* Header */}
+      <header className="bg-white shadow">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <h1 className="text-3xl font-bold text-gray-900">Thunder Scheduler</h1>
+          <p className="mt-2 text-sm text-gray-600">
+            Manage and schedule classes efficiently
+          </p>
+        </div>
+      </header>
+
+      {/* Main content */}
+      <main className="py-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <ScheduleComponent
+            scheduleId={scheduleId}
+            teacherId={teacherId}
+            defaultClassId={defaultClassId}
+          />
+        </div>
+      </main>
+      
+      {/* Performance monitoring tools */}
+      <PerformanceMonitor refreshInterval={3000} />
+    </div>
+  );
+}
+
+function App() {
   // Track page load performance
   useEffect(() => {
-    // Record page load time
     if (window.performance) {
       const pageLoadTime = performance.now();
       console.log(`[Performance] Page loaded in ${pageLoadTime.toFixed(2)}ms`);
       
-      // Report navigation timing metrics
       if (performance.getEntriesByType) {
         const navigationTiming = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
         if (navigationTiming) {
@@ -35,37 +102,13 @@ function App() {
   }, []);
 
   return (
-    <ErrorProvider>
-      <QueryProvider>
+    <QueryProvider>
+      <ErrorProvider>
         <ScheduleProvider>
-          <div className="min-h-screen bg-gray-100">
-            {/* Header */}
-            <header className="bg-white shadow">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                <h1 className="text-3xl font-bold text-gray-900">Thunder Scheduler</h1>
-                <p className="mt-2 text-sm text-gray-600">
-                  Manage and schedule classes efficiently
-                </p>
-              </div>
-            </header>
-
-            {/* Main content */}
-            <main className="py-6">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <ScheduleComponent
-                  scheduleId={scheduleId}
-                  teacherId={teacherId}
-                  defaultClassId={defaultClassId}
-                />
-              </div>
-            </main>
-            
-            {/* Performance monitoring tools */}
-            <PerformanceMonitor refreshInterval={3000} />
-          </div>
+          <ScheduleContent />
         </ScheduleProvider>
-      </QueryProvider>
-    </ErrorProvider>
+      </ErrorProvider>
+    </QueryProvider>
   );
 }
 

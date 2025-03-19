@@ -1,22 +1,18 @@
-import { Schedule, Assignment, Period, DayOfWeek } from '../../types/schedule.types';
+import { Schedule, Assignment, Period, Day } from '../../types/schedule.types';
 import { Class, DailyConflicts, TeacherAvailability } from '../../types/class.types';
 
 /**
  * Generate a mock schedule for testing
  */
 export const mockSchedule = (id: string): Schedule => {
-  const periods: Period[] = [
-    { id: 1, startTime: '08:00', endTime: '09:00' },
-    { id: 2, startTime: '09:15', endTime: '10:15' },
-    { id: 3, startTime: '10:30', endTime: '11:30' },
-    { id: 4, startTime: '12:30', endTime: '13:30' },
-    { id: 5, startTime: '13:45', endTime: '14:45' },
-  ];
+  const periods: Period[] = Array.from({ length: 8 }, (_, i) => ({
+    id: i + 1
+  }));
 
   const assignments: Assignment[] = [
-    { classId: '1', day: 'Monday', period: 1, week: 1 },
-    { classId: '2', day: 'Tuesday', period: 2, week: 1 },
-    { classId: '3', day: 'Wednesday', period: 3, week: 1 },
+    { classId: '1', day: Day.MONDAY, period: 1, week: 1 },
+    { classId: '2', day: Day.TUESDAY, period: 2, week: 1 },
+    { classId: '3', day: Day.WEDNESDAY, period: 3, week: 1 },
   ];
 
   return {
@@ -33,11 +29,17 @@ export const mockSchedule = (id: string): Schedule => {
  * Generate a mock class for testing
  */
 export const mockClass = (id: string): Class => {
-  const days: DayOfWeek[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+  const days: Day[] = [
+    Day.MONDAY,
+    Day.TUESDAY,
+    Day.WEDNESDAY,
+    Day.THURSDAY,
+    Day.FRIDAY
+  ];
   
   const conflicts: DailyConflicts[] = days.map(day => ({
     day,
-    periods: day === 'Friday' ? [4, 5] : [], // Example: No classes on Friday afternoon
+    periods: day === Day.FRIDAY ? [4, 5] : [], // Example: No classes on Friday afternoon
   }));
 
   return {

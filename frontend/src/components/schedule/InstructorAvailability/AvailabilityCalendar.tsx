@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useCallback, useRef } from 'react';
 import { DayOfWeek } from '../../../types/schedule.types';
+import { useMultiPeriodSelection } from '../../../hooks/useMultiPeriodSelection';
 import '../../../styles/components/availability-calendar.css';
 
 interface TeacherAvailability {
   date: string;
   period: number;
+  isRecurring?: boolean;
 }
 
 interface AvailabilityCalendarProps {
@@ -21,8 +23,10 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
   blockedPeriods,
   onAvailabilityChange,
 }) => {
+  const calendarRef = useRef<HTMLDivElement>(null);
+
   // Get array of dates for the week starting from Monday
-  const getDatesForWeek = (): Date[] => {
+  const getDatesForWeek = useCallback((): Date[] => {
     const monday = new Date(startDate);
     monday.setDate(monday.getDate() - monday.getDay() + 1);
     
@@ -31,14 +35,48 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
       date.setDate(monday.getDate() + index);
       return date;
     });
-  };
+  }, [startDate]);
 
-  const isBlocked = (date: Date, period: number): boolean => {
+  const weekDates = getDatesForWeek();
+
+  const handleSelectionComplete = useCallback((
+    startDay: number,
+    startPeriod: number,
+    endDay: number,
+    endPeriod: number
+  ) => {
+    const dates = getDatesForWeek();
+    const startDayIndex = Math.min(startDay, endDay);
+    const endDayIndex = Math.max(startDay, endDay);
+    const periodStart = Math.min(startPeriod, endPeriod);
+    const periodEnd = Math.max(startPeriod, endPeriod);
+
+    for (let dayIndex = startDayIndex; dayIndex <= endDayIndex; dayIndex++) {
+      for (let period = periodStart; period <= periodEnd; period++) {
+        onAvailabilityChange(
+          dates[dayIndex].toISOString().split('T')[0],
+          period
+        );
+      }
+    }
+  }, [getDatesForWeek, onAvailabilityChange]);
+
+  const {
+    handleMouseDown,
+    handleMouseEnter,
+    handleMouseUp,
+    handleClick,
+    isInSelection
+  } = useMultiPeriodSelection({
+    onSelectionComplete: handleSelectionComplete,
+  });
+
+  const isBlocked = useCallback((date: Date, period: number): boolean => {
     const dateStr = date.toISOString().split('T')[0];
     return blockedPeriods.some(
       block => block.date === dateStr && block.period === period
     );
-  };
+  }, [blockedPeriods]);
 
   const formatDate = (date: Date): string => {
     return date.toLocaleDateString('en-US', {
@@ -56,14 +94,13 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
     );
   };
 
-  const handleCellClick = (date: Date, period: number) => {
-    onAvailabilityChange(date.toISOString().split('T')[0], period);
-  };
-
-  const weekDates = getDatesForWeek();
-
   return (
-    <div className="availability-calendar">
+    <div 
+      className="availability-calendar"
+      ref={calendarRef}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
+    >
       {/* Empty cell for top-left corner */}
       <div />
       
@@ -86,17 +123,21 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
           </div>
 
           {/* Availability cells */}
-          {weekDates.map(date => (
+          {weekDates.map((date, dayIndex) => (
             <button
               key={`${date.toISOString()}-${period}`}
-              onClick={() => handleCellClick(date, period)}
+              onClick={(e) => handleClick(dayIndex, period, e)}
+              onMouseDown={(e) => handleMouseDown(dayIndex, period, e)}
+              onMouseEnter={() => handleMouseEnter(dayIndex, period)}
               className={`availability-cell ${
                 isBlocked(date, period) ? 'is-blocked' : 'is-available'
+              } ${isInSelection(dayIndex, period) ? 'is-selecting' : ''
               } ${isToday(date) ? 'is-today' : ''}`}
               aria-label={`Toggle availability for ${
-                DAYS[weekDates.indexOf(date)]
+                DAYS[dayIndex]
               } Period ${period}`}
               aria-pressed={isBlocked(date, period)}
+              draggable={false}
             />
           ))}
         </React.Fragment>

@@ -1,10 +1,10 @@
 import { http, HttpResponse } from 'msw';
-import { Schedule, Assignment, Conflict } from '../../types/schedule.types';
+import { Schedule, Assignment, Conflict, Day } from '../../types/schedule.types';
 import { Class, DailyConflicts, TeacherAvailability } from '../../types/class.types';
 import { mockSchedule, mockClass, mockTeacherAvailability } from '../fixtures';
 
 // Base API URL
-const API_URL = 'http://localhost:3000/api';
+const API_URL = 'http://localhost:4000/api';
 
 export const scheduleHandlers = [
   // Schedule endpoints
@@ -125,7 +125,7 @@ export const scheduleHandlers = [
       data: [
         {
           classId: '1',
-          day: 'Monday',
+          day: Day.MONDAY,
           period: 3,
           type: 'class',
           message: 'Conflict with another class'
@@ -185,11 +185,16 @@ export const scheduleHandlers = [
     });
   }),
 
-  http.put(`${API_URL}/availability`, async ({ request }) => {
+  http.post(`${API_URL}/availability`, async ({ request }) => {
     const availability = await request.json() as TeacherAvailability;
     
     return HttpResponse.json({
-      data: availability,
+      data: {
+        ...availability,
+        id: availability.id || `avail-${availability.date}`,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      },
       success: true
     });
   })

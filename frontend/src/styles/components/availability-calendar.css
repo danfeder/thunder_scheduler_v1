@@ -2,10 +2,11 @@
 .availability-calendar {
   @apply grid gap-1;
   grid-template-columns: auto repeat(5, minmax(120px, 1fr));
+  user-select: none; /* Prevent text selection during drag */
 }
 
 .availability-cell {
-  @apply p-2 border rounded flex flex-col items-stretch transition-colors duration-150 cursor-pointer;
+  @apply p-2 border rounded flex flex-col items-stretch transition-all duration-150 cursor-pointer select-none;
   min-height: 3.5rem;
 }
 
@@ -19,6 +20,21 @@
 
 .availability-cell.is-today {
   @apply border-2 border-blue-400;
+}
+
+.availability-cell.is-selecting {
+  @apply bg-blue-100 border-blue-300 shadow-sm;
+  transform: scale(1.02);
+}
+
+.availability-cell.is-selecting.is-blocked {
+  @apply bg-red-200 border-red-400;
+}
+
+/* Add hover effect during drag */
+.availability-cell:hover:not(.is-selecting) {
+  @apply shadow-sm;
+  transform: scale(1.02);
 }
 
 .availability-header {
@@ -57,4 +73,24 @@
 
 .week-nav-dates {
   @apply text-lg font-semibold;
+}
+
+/* Selection feedback */
+.availability-cell.is-selecting:not(.is-blocked) {
+  @apply bg-blue-200 border-blue-400;
+}
+
+.availability-cell.is-selecting.is-blocked {
+  @apply bg-red-300 border-red-500;
+}
+
+/* Touch device support */
+@media (hover: none) {
+  .availability-cell {
+    @apply p-4; /* Larger touch target */
+  }
+  
+  .availability-cell:hover {
+    transform: none;
+  }
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { DragDropContext, DropResult } from '@hello-pangea/dnd';
-import { DayOfWeek, Assignment, Conflict } from '../../../types/schedule.types';
+import { Day, DayOfWeek, Assignment, Conflict, convertDay } from '../../../types/schedule.types';
 import { format, addDays, startOfWeek } from 'date-fns';
 import '../../../styles/components/schedule-calendar.css';
 import DroppableCell from './DroppableCell';
@@ -14,7 +14,14 @@ interface ScheduleCalendarProps {
   onDragEnd: (result: DropResult) => void;
 }
 
-const DAYS: DayOfWeek[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+const DAYS: Day[] = [
+  Day.MONDAY,
+  Day.TUESDAY,
+  Day.WEDNESDAY,
+  Day.THURSDAY,
+  Day.FRIDAY
+];
+
 const PERIODS = Array.from({ length: 8 }, (_, i) => i + 1);
 
 const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
@@ -37,7 +44,7 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
     });
   }, [currentWeek]);
 
-  const getAssignmentsForCell = (day: DayOfWeek, period: number): Assignment[] => {
+  const getAssignmentsForCell = (day: Day, period: number): Assignment[] => {
     return assignments.filter(
       a => 
         a.day === day && 
@@ -47,10 +54,35 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
     );
   };
 
-  const getConflictsForCell = (day: DayOfWeek, period: number): Conflict[] => {
-    return conflicts.filter(
-      c => c.day === day && c.period === period
-    );
+  const getConflictsForCell = (day: Day, period: number): Conflict[] => {
+    try {
+      if (!Array.isArray(conflicts)) {
+        console.warn('[DEBUG] ScheduleCalendar: Conflicts is not an array:', conflicts);
+        return [];
+      }
+      
+      return conflicts.filter(conflict => {
+        if (!conflict || typeof conflict !== 'object') {
+          console.warn('[DEBUG] ScheduleCalendar: Invalid conflict object:', conflict);
+          return false;
+        }
+        
+        const hasConflict = conflict.day === day && conflict.period === period;
+        
+        if (hasConflict) {
+          console.log('[DEBUG] ScheduleCalendar: Found conflict:', {
+            day,
+            period,
+            conflict
+          });
+        }
+        
+        return hasConflict;
+      });
+    } catch (error) {
+      console.error('[DEBUG] ScheduleCalendar: Error in getConflictsForCell:', error);
+      return [];
+    }
   };
 
   return (
@@ -65,7 +97,7 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
             <div className="date-header">
               {format(weekDates[index], 'MMM d')}
             </div>
-            <div>{day}</div>
+            <div>{convertDay.toString(day)}</div>
           </div>
         ))}
 

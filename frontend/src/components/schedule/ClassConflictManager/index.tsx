@@ -1,12 +1,8 @@
 import React, { useState } from 'react';
 import Card from '../../shared/Card';
 import ConflictGrid from './ConflictGrid';
-import { DayOfWeek } from '../../../types/schedule.types';
-
-interface DailyConflicts {
-  day: DayOfWeek;
-  periods: number[];
-}
+import { Day } from '../../../types/schedule.types';
+import { DailyConflicts } from '../../../types/class.types';
 
 interface ClassConflictManagerProps {
   classId: string;
@@ -21,7 +17,7 @@ const ClassConflictManager: React.FC<ClassConflictManagerProps> = ({
 }) => {
   const [conflicts, setConflicts] = useState<DailyConflicts[]>(initialConflicts);
 
-  const handleConflictToggle = (day: DayOfWeek, period: number) => {
+  const handleConflictToggle = (day: Day, period: number) => {
     setConflicts(prevConflicts => {
       const dayConflicts = prevConflicts.find(c => c.day === day);
       
